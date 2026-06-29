@@ -211,7 +211,7 @@ export default function Dashboard() {
                 />
                 <Tooltip
                   contentStyle={{ background: '#0F1535', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff' }}
-                  formatter={(v: number) => [formatFCFA(v), 'Revenus']}
+                  formatter={(v) => [formatFCFA(Number(v ?? 0)), 'Revenus']}
                 />
                 <Bar dataKey="revenue" fill="#F5C518" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -237,7 +237,7 @@ export default function Dashboard() {
                   </Pie>
                   <Tooltip
                     contentStyle={{ background: '#0F1535', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff' }}
-                    formatter={(v: number) => [`${v}%`, 'Part']}
+                    formatter={(v) => [`${v ?? 0}%`, 'Part']}
                   />
                 </PieChart>
               </ResponsiveContainer>
