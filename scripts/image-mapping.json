@@ -1,0 +1,462 @@
+[
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.20.21.jpeg",
+    "clean": "15.20.21.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.20.21.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.09 (1).jpeg",
+    "clean": "15.23.09-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.09-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.09.jpeg",
+    "clean": "15.23.09.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.09.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.12 (1).jpeg",
+    "clean": "15.23.12-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.12-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.12 (2).jpeg",
+    "clean": "15.23.12-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.12-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.12.jpeg",
+    "clean": "15.23.12.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.12.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.13 (1).jpeg",
+    "clean": "15.23.13-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.13-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.13 (2).jpeg",
+    "clean": "15.23.13-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.13-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.13.jpeg",
+    "clean": "15.23.13.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.13.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.14.jpeg",
+    "clean": "15.23.14.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.14.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.17.jpeg",
+    "clean": "15.23.17.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.17.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.18.jpeg",
+    "clean": "15.23.18.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.18.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.21 (1).jpeg",
+    "clean": "15.23.21-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.21-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.21.jpeg",
+    "clean": "15.23.21.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.21.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.22 (1).jpeg",
+    "clean": "15.23.22-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.22-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.22.jpeg",
+    "clean": "15.23.22.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.22.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.23 (1).jpeg",
+    "clean": "15.23.23-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.23-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.23 (2).jpeg",
+    "clean": "15.23.23-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.23-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.23 (3).jpeg",
+    "clean": "15.23.23-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.23-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.23.jpeg",
+    "clean": "15.23.23.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.23.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.24 (1).jpeg",
+    "clean": "15.23.24-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.24-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.24.jpeg",
+    "clean": "15.23.24.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.24.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.25.jpeg",
+    "clean": "15.23.25.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.25.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.26.jpeg",
+    "clean": "15.23.26.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.26.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.27 (1).jpeg",
+    "clean": "15.23.27-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.27-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.27 (2).jpeg",
+    "clean": "15.23.27-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.27-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.27 (3).jpeg",
+    "clean": "15.23.27-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.27-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.27.jpeg",
+    "clean": "15.23.27.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.27.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.28 (1).jpeg",
+    "clean": "15.23.28-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.28-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.28 (2).jpeg",
+    "clean": "15.23.28-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.28-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.28 (3).jpeg",
+    "clean": "15.23.28-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.28-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.28.jpeg",
+    "clean": "15.23.28.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.28.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.31.jpeg",
+    "clean": "15.23.31.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.31.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.32 (1).jpeg",
+    "clean": "15.23.32-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.32-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.32 (2).jpeg",
+    "clean": "15.23.32-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.32-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.32 (3).jpeg",
+    "clean": "15.23.32-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.32-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.32.jpeg",
+    "clean": "15.23.32.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.32.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.33 (1).jpeg",
+    "clean": "15.23.33-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.33-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.33 (2).jpeg",
+    "clean": "15.23.33-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.33-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.33.jpeg",
+    "clean": "15.23.33.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.33.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.34 (1).jpeg",
+    "clean": "15.23.34-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.34-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.34.jpeg",
+    "clean": "15.23.34.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.34.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.35 (1).jpeg",
+    "clean": "15.23.35-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.35-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.35.jpeg",
+    "clean": "15.23.35.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.35.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.36.jpeg",
+    "clean": "15.23.36.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.36.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.37 (1).jpeg",
+    "clean": "15.23.37-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.37-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.37.jpeg",
+    "clean": "15.23.37.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.37.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.42.jpeg",
+    "clean": "15.23.42.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.42.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.43 (1).jpeg",
+    "clean": "15.23.43-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.43-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.43.jpeg",
+    "clean": "15.23.43.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.43.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.44 (1).jpeg",
+    "clean": "15.23.44-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.44-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.44 (2).jpeg",
+    "clean": "15.23.44-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.44-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.44 (3).jpeg",
+    "clean": "15.23.44-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.44-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.44.jpeg",
+    "clean": "15.23.44.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.44.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.45.jpeg",
+    "clean": "15.23.45.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.45.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.46 (1).jpeg",
+    "clean": "15.23.46-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.46-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.46.jpeg",
+    "clean": "15.23.46.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.46.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.47 (1).jpeg",
+    "clean": "15.23.47-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.47-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.47 (2).jpeg",
+    "clean": "15.23.47-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.47-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.47 (3).jpeg",
+    "clean": "15.23.47-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.47-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.47.jpeg",
+    "clean": "15.23.47.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.47.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.48 (1).jpeg",
+    "clean": "15.23.48-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.48-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.48 (2).jpeg",
+    "clean": "15.23.48-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.48-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.48.jpeg",
+    "clean": "15.23.48.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.48.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.49 (1).jpeg",
+    "clean": "15.23.49-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.49-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.49 (2).jpeg",
+    "clean": "15.23.49-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.49-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.49 (3).jpeg",
+    "clean": "15.23.49-3.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.49-3.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.49.jpeg",
+    "clean": "15.23.49.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.49.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.50 (1).jpeg",
+    "clean": "15.23.50-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.50-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.23.50.jpeg",
+    "clean": "15.23.50.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.23.50.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.27.35.jpeg",
+    "clean": "15.27.35.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.27.35.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.01.jpeg",
+    "clean": "15.29.01.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.01.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.02 (1).jpeg",
+    "clean": "15.29.02-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.02-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.02.jpeg",
+    "clean": "15.29.02.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.02.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.03.jpeg",
+    "clean": "15.29.03.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.03.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.05 (1).jpeg",
+    "clean": "15.29.05-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.05-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.05 (2).jpeg",
+    "clean": "15.29.05-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.05-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.05.jpeg",
+    "clean": "15.29.05.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.05.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.06 (1).jpeg",
+    "clean": "15.29.06-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.06-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.06.jpeg",
+    "clean": "15.29.06.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.06.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.07 (1).jpeg",
+    "clean": "15.29.07-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.07-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.07 (2).jpeg",
+    "clean": "15.29.07-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.07-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.07.jpeg",
+    "clean": "15.29.07.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.07.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.08 (1).jpeg",
+    "clean": "15.29.08-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.08-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.08.jpeg",
+    "clean": "15.29.08.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.08.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.09 (1).jpeg",
+    "clean": "15.29.09-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.09-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.09.jpeg",
+    "clean": "15.29.09.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.09.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.10 (1).jpeg",
+    "clean": "15.29.10-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.10-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.10.jpeg",
+    "clean": "15.29.10.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.10.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.11 (1).jpeg",
+    "clean": "15.29.11-1.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.11-1.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.11 (2).jpeg",
+    "clean": "15.29.11-2.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.11-2.jpg"
+  },
+  {
+    "original": "WhatsApp Image 2026-06-27 at 15.29.11.jpeg",
+    "clean": "15.29.11.jpg",
+    "url": "https://mswvuhjzpbwjloorczdv.supabase.co/storage/v1/object/public/product-images/15.29.11.jpg"
+  }
+]
