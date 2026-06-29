@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Menu, X, Phone, Music2 } from 'lucide-react';
+import { ShoppingCart, Menu, X, Phone } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
 const NAV_LINKS = [
@@ -36,9 +36,11 @@ export function Navbar() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 bg-gold rounded-lg flex items-center justify-center group-hover:shadow-gold transition-shadow">
-                <Music2 size={18} className="text-bg-deep" />
-              </div>
+              <img
+                src="/logo.jpg"
+                alt="Davis Sono Shop"
+                className="w-9 h-9 rounded-xl bg-white group-hover:opacity-90 transition-opacity"
+              />
               <span className="font-heading font-bold text-lg">
                 <span className="text-gold">Davis</span>
                 <span className="text-white"> Sono</span>
