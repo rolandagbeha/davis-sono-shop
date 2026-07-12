@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Speaker, SlidersHorizontal, Mic, Guitar, Lightbulb, Cable } from 'lucide-react';
+import { Speaker, SlidersHorizontal, Piano, Guitar, Drum, Wrench, Mic2, Zap } from 'lucide-react';
 import type { ProductCategory } from '../../types';
 
 interface CategoryItem {
@@ -13,45 +13,59 @@ interface CategoryItem {
 
 const CATEGORIES: CategoryItem[] = [
   {
-    category:    'enceintes',
-    label:       'Enceintes',
-    description: 'Baffles, subs, colonnes',
+    category:    'sonorisation',
+    label:       'Sonorisation',
+    description: 'Enceintes, subs, line array',
     icon:        Speaker,
     color:       'from-blue-500/20 to-cyan/10',
   },
   {
-    category:    'mixage',
-    label:       'Mixage',
-    description: 'Tables, processeurs, amplis',
+    category:    'mixeurs',
+    label:       'Mixeurs & EQ',
+    description: 'Consoles, égaliseurs, processeurs',
     icon:        SlidersHorizontal,
     color:       'from-purple-500/20 to-pink-500/10',
   },
   {
-    category:    'micros',
-    label:       'Micros & HF',
-    description: 'Dynamiques, condensateurs, UHF',
-    icon:        Mic,
+    category:    'amplificateurs',
+    label:       'Amplificateurs',
+    description: 'Amplis de puissance, combos',
+    icon:        Zap,
     color:       'from-gold/20 to-orange-500/10',
   },
   {
-    category:    'instruments',
-    label:       'Instruments',
-    description: 'Guitares, claviers, batteries',
+    category:    'claviers',
+    label:       'Claviers',
+    description: 'Arrangeurs, synthétiseurs',
+    icon:        Piano,
+    color:       'from-cyan/20 to-blue-500/10',
+  },
+  {
+    category:    'guitares',
+    label:       'Guitares & Basses',
+    description: 'Électriques, acoustiques',
     icon:        Guitar,
     color:       'from-green-500/20 to-cyan/10',
   },
   {
-    category:    'eclairage',
-    label:       'Éclairage',
-    description: 'LED, PAR, têtes mobiles',
-    icon:        Lightbulb,
-    color:       'from-yellow-500/20 to-gold/10',
+    category:    'batteries',
+    label:       'Batteries & Percus',
+    description: 'Kits complets, congas, hardware',
+    icon:        Drum,
+    color:       'from-red-500/20 to-orange-500/10',
+  },
+  {
+    category:    'instruments',
+    label:       'Instruments',
+    description: 'Cuivres, cordes, divers',
+    icon:        Mic2,
+    color:       'from-pink-500/20 to-purple-500/10',
   },
   {
     category:    'accessoires',
     label:       'Accessoires',
-    description: 'Câbles, stands, pieds',
-    icon:        Cable,
+    description: 'Racks, stands, générateurs',
+    icon:        Wrench,
     color:       'from-gray-500/20 to-slate-500/10',
   },
 ];
@@ -82,7 +96,7 @@ export function CategoryGrid() {
             Explorer par catégorie
           </h2>
           <p className="text-muted max-w-xl mx-auto">
-            Trouvez rapidement l'équipement qu'il vous faut parmi nos 6 catégories de produits
+            Trouvez rapidement l'équipement qu'il vous faut parmi nos 8 catégories de produits
           </p>
         </motion.div>
 
@@ -91,7 +105,7 @@ export function CategoryGrid() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4"
         >
           {CATEGORIES.map(cat => (
             <motion.button

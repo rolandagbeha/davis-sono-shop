@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
-import { Music2, Phone, MapPin, MessageCircle } from 'lucide-react';
+import { Phone, MapPin, MessageCircle } from 'lucide-react';
 
 const PRODUCT_LINKS = [
-  { href: '/catalogue?category=enceintes',    label: 'Enceintes' },
-  { href: '/catalogue?category=mixage',       label: 'Tables de mixage' },
-  { href: '/catalogue?category=micros',       label: 'Microphones' },
-  { href: '/catalogue?category=instruments',  label: 'Instruments' },
-  { href: '/catalogue?category=eclairage',    label: 'Éclairage' },
-  { href: '/catalogue?category=accessoires',  label: 'Accessoires' },
+  { href: '/catalogue?category=sonorisation',   label: 'Sonorisation' },
+  { href: '/catalogue?category=mixeurs',        label: 'Mixeurs & EQ' },
+  { href: '/catalogue?category=amplificateurs', label: 'Amplificateurs' },
+  { href: '/catalogue?category=guitares',       label: 'Guitares & Basses' },
+  { href: '/catalogue?category=instruments',    label: 'Instruments' },
+  { href: '/catalogue?category=accessoires',    label: 'Accessoires' },
 ];
 
 const SERVICE_LINKS = [
@@ -50,9 +50,7 @@ export function Footer() {
           {/* Colonne marque */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-gold rounded-lg flex items-center justify-center">
-                <Music2 size={20} className="text-bg-deep" />
-              </div>
+              <img src="/logo.jpg" alt="Davis Sono Shop" className="w-9 h-9 rounded-lg bg-white object-cover" />
               <span className="font-heading font-bold text-xl">
                 <span className="text-gold">Davis</span>
                 <span className="text-white"> Sono</span>

@@ -1,11 +1,13 @@
 // Types centraux — réutilisables pour le SaaS multi-vendeurs
 
 export type ProductCategory =
-  | 'enceintes'
-  | 'mixage'
-  | 'micros'
+  | 'sonorisation'
+  | 'mixeurs'
+  | 'amplificateurs'
+  | 'claviers'
+  | 'guitares'
+  | 'batteries'
   | 'instruments'
-  | 'eclairage'
   | 'accessoires';
 
 export type ProductBadge = 'new' | 'hot' | 'sale' | null;

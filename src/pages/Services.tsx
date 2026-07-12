@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Truck, Wrench, Music, GraduationCap, Headphones, Phone, MessageCircle } from 'lucide-react';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 
 const SERVICES_DETAIL = [
   {
@@ -9,15 +10,15 @@ const SERVICES_DETAIL = [
     color:       'text-gold',
     bg:          'bg-gold/10',
     border:      'border-gold/20',
-    title:       'Vente d\'équipements',
-    description: 'Large gamme de matériel audio et musical professionnel.',
+    title:       'Vente d\'equipements',
+    description: 'Large gamme de materiel audio et musical professionnel.',
     details: [
       'Enceintes et subwoofers (JBL, Bose, RCF)',
       'Tables de mixage (Yamaha, Behringer, Allen & Heath)',
       'Microphones (Shure, Sennheiser, AKG)',
       'Instruments (Yamaha, Roland, Fender)',
-      'Éclairage DJ et scénique',
-      'Câblerie et accessoires',
+      'Eclairage DJ et scenique',
+      'Cablerie et accessoires',
     ],
   },
   {
@@ -26,14 +27,14 @@ const SERVICES_DETAIL = [
     color:       'text-cyan',
     bg:          'bg-cyan/10',
     border:      'border-cyan/20',
-    title:       'Location de matériel',
-    description: 'Louez du matériel pro pour vos événements et concerts.',
+    title:       'Location de materiel',
+    description: 'Louez du materiel pro pour vos evenements et concerts.',
     details: [
       'Enceintes professionnelles par jour/semaine',
-      'Systèmes de micros HF',
+      'Systemes de micros HF',
       'Tables de mixage',
-      'Kits d\'éclairage DJ',
-      'Livraison et reprise à domicile (Lomé)',
+      'Kits d\'eclairage DJ',
+      'Livraison et reprise a domicile (Lome)',
       'Assistance technique optionnelle',
     ],
   },
@@ -43,15 +44,15 @@ const SERVICES_DETAIL = [
     color:       'text-purple-400',
     bg:          'bg-purple-500/10',
     border:      'border-purple-500/20',
-    title:       'Installation & Câblage',
-    description: 'Installation complète de systèmes audio dans vos locaux.',
+    title:       'Installation & Cablage',
+    description: 'Installation complete de systemes audio dans vos locaux.',
     details: [
-      'Étude acoustique et conception du système',
-      'Installation d\'enceintes murales et plafonnières',
-      'Câblage et rack de distribution',
-      'Réglage et optimisation du son',
-      'Formation de vos équipes techniques',
-      'Maintenance préventive incluse (1 an)',
+      'Etude acoustique et conception du systeme',
+      'Installation d\'enceintes murales et plafonnieres',
+      'Cablage et rack de distribution',
+      'Reglage et optimisation du son',
+      'Formation de vos equipes techniques',
+      'Maintenance preventive incluse (1 an)',
     ],
   },
   {
@@ -61,12 +62,12 @@ const SERVICES_DETAIL = [
     bg:          'bg-green-500/10',
     border:      'border-green-500/20',
     title:       'Maintenance',
-    description: 'Entretien et réparation de vos équipements audio.',
+    description: 'Entretien et reparation de vos equipements audio.',
     details: [
-      'Diagnostic complet de votre matériel',
-      'Réparation rapide en atelier',
-      'Remplacement de pièces d\'origine',
-      'Nettoyage et révision périodique',
+      'Diagnostic complet de votre materiel',
+      'Reparation rapide en atelier',
+      'Remplacement de pieces d\'origine',
+      'Nettoyage et revision periodique',
       'Contrats de maintenance sur mesure',
       'Intervention d\'urgence sous 24h',
     ],
@@ -78,14 +79,14 @@ const SERVICES_DETAIL = [
     bg:          'bg-orange-500/10',
     border:      'border-orange-500/20',
     title:       'Formation musicale',
-    description: 'Apprenez à jouer d\'un instrument avec nos formateurs.',
+    description: 'Apprenez a jouer d\'un instrument avec nos formateurs.',
     details: [
-      'Guitare acoustique & électrique',
+      'Guitare acoustique & electrique',
       'Piano / Clavier',
       'Batterie & percussions',
       'Chant et techniques vocales',
       'Cours individuels ou en groupe',
-      'Tous niveaux — dès 8 ans',
+      'Tous niveaux — des 8 ans',
     ],
   },
   {
@@ -94,21 +95,26 @@ const SERVICES_DETAIL = [
     color:       'text-pink-400',
     bg:          'bg-pink-500/10',
     border:      'border-pink-500/20',
-    title:       'Ingénierie du son',
+    title:       'Ingenierie du son',
     description: 'Formations en prise de son, mixage live et studio.',
     details: [
-      'Initiation à la prise de son',
-      'Mixage live sur console numérique',
+      'Initiation a la prise de son',
+      'Mixage live sur console numerique',
       'Traitement et effets audio',
       'Enregistrement en studio',
       'Mastering de base',
-      'Certification à l\'issue de la formation',
+      'Certification a l\'issue de la formation',
     ],
   },
 ];
 
 export default function Services() {
   const navigate = useNavigate();
+
+  useDocumentMeta({
+    title: 'Nos Services',
+    description: 'Vente, location, installation et maintenance de materiel audio professionnel a Lome, Togo.',
+  });
 
   return (
     <div className="min-h-screen pt-24 pb-12">
@@ -126,7 +132,7 @@ export default function Services() {
             Services Davis Sono Shop
           </h1>
           <p className="text-muted max-w-2xl mx-auto text-lg">
-            De la vente à la formation, nous vous accompagnons à chaque étape de votre projet sonore.
+            De la vente a la formation, nous vous accompagnons a chaque etape de votre projet sonore.
           </p>
         </motion.div>
 
@@ -176,7 +182,7 @@ export default function Services() {
             Besoin d'un service sur mesure ?
           </h3>
           <p className="text-muted mb-6">
-            Contactez-nous directement — nous adaptons nos services à votre budget et vos besoins.
+            Contactez-nous directement — nous adaptons nos services a votre budget et vos besoins.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="tel:+22898423232" className="btn-secondary">
