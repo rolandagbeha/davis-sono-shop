@@ -62,6 +62,14 @@ CREATE TABLE IF NOT EXISTS orders (
   total                 integer     NOT NULL CHECK (total >= 0),
   status                text        DEFAULT 'pending'
     CHECK (status IN ('pending','confirmed','preparing','shipped','delivered','cancelled')),
+  -- Reference de transaction Mobile Money/virement (fournie par le client au
+  -- checkout) et statut de verification du paiement par l'admin — separe du
+  -- statut de traitement de la commande (status ci-dessus). 'cash' reste
+  -- 'unpaid' jusqu'a la livraison ; les autres moyens passent a
+  -- 'pending_verification' des qu'une reference est fournie.
+  payment_reference     text,
+  payment_status        text        DEFAULT 'unpaid'
+    CHECK (payment_status IN ('unpaid','pending_verification','paid')),
   notes                 text,
   created_at            timestamptz DEFAULT now(),
   updated_at            timestamptz DEFAULT now()
@@ -150,7 +158,8 @@ CREATE OR REPLACE FUNCTION create_order_with_stock_check(
   p_client_neighborhood text,
   p_delivery_instructions text,
   p_payment_method text,
-  p_items jsonb
+  p_items jsonb,
+  p_payment_reference text DEFAULT NULL
 )
 RETURNS orders
 LANGUAGE plpgsql
@@ -163,6 +172,7 @@ DECLARE
   v_total integer;
   v_delivery_fee integer;
   v_built_items jsonb := '[]'::jsonb;
+  v_payment_status text;
   v_order orders%ROWTYPE;
 BEGIN
   IF jsonb_array_length(p_items) = 0 THEN
@@ -203,14 +213,20 @@ BEGIN
 
   v_total := v_subtotal + v_delivery_fee;
 
+  v_payment_status := CASE
+    WHEN p_payment_method = 'cash' THEN 'unpaid'
+    WHEN p_payment_reference IS NOT NULL AND length(trim(p_payment_reference)) > 0 THEN 'pending_verification'
+    ELSE 'unpaid'
+  END;
+
   INSERT INTO orders (
     order_number, client_name, client_phone, client_email, client_address,
     client_neighborhood, delivery_instructions, payment_method, items,
-    subtotal, delivery_fee, total, status
+    subtotal, delivery_fee, total, status, payment_reference, payment_status
   ) VALUES (
     p_order_number, p_client_name, p_client_phone, p_client_email, p_client_address,
     p_client_neighborhood, p_delivery_instructions, p_payment_method, v_built_items,
-    v_subtotal, v_delivery_fee, v_total, 'pending'
+    v_subtotal, v_delivery_fee, v_total, 'pending', p_payment_reference, v_payment_status
   ) RETURNING * INTO v_order;
 
   RETURN v_order;

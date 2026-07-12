@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Download, Eye, MessageCircle } from 'lucide-react';
 import { useOrders, orderService } from '../../hooks/useOrders';
-import type { Order, OrderStatus } from '../../types';
+import type { Order, OrderStatus, PaymentStatus } from '../../types';
 import { formatFCFA } from '../../utils/formatPrice';
 import { StatusBadge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
@@ -16,6 +16,12 @@ const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
   { value: 'cancelled', label: 'Annulée' },
 ];
 
+const PAYMENT_STATUS_OPTIONS: { value: PaymentStatus; label: string }[] = [
+  { value: 'unpaid',               label: 'Non payée' },
+  { value: 'pending_verification', label: 'À vérifier' },
+  { value: 'paid',                 label: 'Payée' },
+];
+
 export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [filterStatus,  setFilterStatus]  = useState('');
@@ -26,6 +32,12 @@ export default function AdminOrders() {
   const handleStatusChange = async (order: Order, newStatus: OrderStatus) => {
     await orderService.updateStatus(order.id, newStatus, order);
     refetch();
+  };
+
+  const handlePaymentStatusChange = async (order: Order, newStatus: PaymentStatus) => {
+    await orderService.updatePaymentStatus(order.id, newStatus);
+    refetch();
+    if (selectedOrder?.id === order.id) setSelectedOrder({ ...selectedOrder, payment_status: newStatus });
   };
 
   return (
@@ -88,7 +100,10 @@ export default function AdminOrders() {
                       <div className="text-muted text-xs font-mono">{order.client_phone}</div>
                     </td>
                     <td className="py-3 px-4 price text-sm">{formatFCFA(order.total)}</td>
-                    <td className="py-3 px-4 text-muted capitalize text-xs">{order.payment_method.replace('_', ' ')}</td>
+                    <td className="py-3 px-4">
+                      <div className="text-muted capitalize text-xs mb-1">{order.payment_method.replace('_', ' ')}</div>
+                      <StatusBadge status={order.payment_status} />
+                    </td>
                     <td className="py-3 px-4">
                       <div className="relative group inline-block">
                         <StatusBadge status={order.status} />
@@ -164,6 +179,32 @@ export default function AdminOrders() {
                 <div className="flex justify-between font-semibold">
                   <span className="text-white">Total</span>
                   <span className="price text-lg">{formatFCFA(selectedOrder.total)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Paiement */}
+            <div>
+              <h4 className="font-heading font-semibold text-white mb-3">Paiement</h4>
+              <div className="bg-bg-surface rounded-card p-4 space-y-2 text-sm">
+                <p><span className="text-muted">Moyen :</span> <span className="text-white capitalize">{selectedOrder.payment_method.replace('_', ' ')}</span></p>
+                <p>
+                  <span className="text-muted">Référence :</span>{' '}
+                  <span className="text-white font-mono">{selectedOrder.payment_reference || '—'}</span>
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-muted">Statut :</span>
+                  <select
+                    value={selectedOrder.payment_status}
+                    onChange={e => handlePaymentStatusChange(selectedOrder, e.target.value as PaymentStatus)}
+                    title="Changer le statut de paiement"
+                    aria-label="Statut de paiement"
+                    className="text-xs bg-bg-deep border border-white/10 rounded px-2 py-1 text-white focus:outline-none focus:border-gold/50"
+                  >
+                    {PAYMENT_STATUS_OPTIONS.map(s => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>

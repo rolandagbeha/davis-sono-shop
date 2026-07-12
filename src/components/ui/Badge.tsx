@@ -35,6 +35,10 @@ const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
   sent:       { label: 'Envoyé',          className: 'status-confirmed' },
   accepted:   { label: 'Accepté',         className: 'status-delivered' },
   refused:    { label: 'Refusé',          className: 'status-cancelled' },
+  // Statut de paiement
+  unpaid:               { label: 'Non payée',          className: 'status-cancelled' },
+  pending_verification: { label: 'À vérifier',          className: 'status-pending' },
+  paid:                 { label: 'Payée',               className: 'status-delivered' },
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {

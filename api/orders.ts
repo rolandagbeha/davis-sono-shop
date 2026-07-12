@@ -99,7 +99,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   // atomique cote SQL — voir neon/schema.sql).
   try {
     const rows = await sql.query(
-      'SELECT * FROM create_order_with_stock_check($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb)',
+      'SELECT * FROM create_order_with_stock_check($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10)',
       [
         body.order_number,
         body.client_name,
@@ -110,6 +110,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         (body.delivery_instructions as string) || null,
         body.payment_method,
         JSON.stringify(items.map(i => ({ product_id: i.product_id, quantity: i.quantity }))),
+        (body.payment_reference as string) || null,
       ],
     );
 

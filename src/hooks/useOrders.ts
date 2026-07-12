@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { client } from '../lib/neon';
-import type { Order, OrderStatus, PaymentMethod } from '../types';
+import type { Order, OrderStatus, PaymentMethod, PaymentStatus } from '../types';
 import toast from 'react-hot-toast';
 import { notifyClientStatusChange } from '../lib/whatsapp';
 
@@ -54,6 +54,7 @@ export interface CreateOrderInput {
   client_neighborhood:    string;
   delivery_instructions?: string;
   payment_method:         PaymentMethod;
+  payment_reference?:     string;
   items:                  { product_id: string; quantity: number }[];
 }
 
@@ -101,6 +102,15 @@ export const orderService = {
     toast.success('Statut mis à jour');
   },
 
+  async updatePaymentStatus(orderId: string, newStatus: PaymentStatus): Promise<void> {
+    const { error } = await client
+      .from('orders')
+      .update({ payment_status: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', orderId);
+    if (error) throw error;
+    toast.success('Statut de paiement mis a jour');
+  },
+
   async getById(id: string): Promise<Order | null> {
     const { data, error } = await client
       .from('orders')
@@ -114,7 +124,7 @@ export const orderService = {
   // Export CSV des commandes
   exportCsv(orders: Order[]): void {
     const headers = [
-      'Numéro', 'Client', 'Téléphone', 'Total', 'Statut', 'Paiement', 'Date',
+      'Numéro', 'Client', 'Téléphone', 'Total', 'Statut', 'Paiement', 'Statut paiement', 'Référence paiement', 'Date',
     ];
     const rows = orders.map(o => [
       o.order_number,
@@ -123,6 +133,8 @@ export const orderService = {
       o.total,
       o.status,
       o.payment_method,
+      o.payment_status,
+      o.payment_reference || '',
       new Date(o.created_at).toLocaleDateString('fr-FR'),
     ]);
 

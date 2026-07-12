@@ -39,6 +39,7 @@ export default function Checkout() {
   const navigate  = useNavigate();
   const [step,    setStep]      = useState(1);
   const [loading, setLoading]   = useState(false);
+  const [paymentReference, setPaymentReference] = useState('');
 
   const [data, setData] = useState<CheckoutData>({
     client_name:           '',
@@ -111,6 +112,7 @@ export default function Checkout() {
         client_neighborhood:   data.client_neighborhood,
         delivery_instructions: data.delivery_instructions || undefined,
         payment_method:        data.payment_method,
+        payment_reference:     paymentReference.trim() || undefined,
         items:                 items.map(i => ({ product_id: i.product.id, quantity: i.quantity })),
       });
 
@@ -295,6 +297,23 @@ export default function Checkout() {
                         </label>
                       ))}
                     </div>
+
+                    {data.payment_method !== 'cash' && (
+                      <div className="pt-2">
+                        <label className="block text-sm text-muted mb-2">
+                          Référence de transaction (optionnel)
+                        </label>
+                        <input
+                          className="input"
+                          placeholder="Ex : code de confirmation reçu par SMS"
+                          value={paymentReference}
+                          onChange={e => setPaymentReference(e.target.value)}
+                        />
+                        <p className="text-xs text-muted mt-1.5">
+                          Si vous avez déjà effectué le transfert, indiquez la référence pour accélérer la vérification. Vous pouvez aussi laisser vide et l'envoyer plus tard sur WhatsApp.
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

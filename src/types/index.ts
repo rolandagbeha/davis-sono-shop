@@ -53,6 +53,12 @@ export type PaymentMethod =
   | 'flooz'
   | 'virement';
 
+// Statut de verification du paiement (distinct du statut de traitement de
+// la commande ci-dessous) : 'cash' reste unpaid jusqu'a la livraison, les
+// autres moyens passent en pending_verification des qu'une reference est
+// fournie, puis l'admin les marque paid une fois le virement/transfert confirme.
+export type PaymentStatus = 'unpaid' | 'pending_verification' | 'paid';
+
 export interface OrderItem {
   product_id: string;
   product_name: string;
@@ -77,6 +83,8 @@ export interface Order {
   delivery_fee: number;
   total: number;
   status: OrderStatus;
+  payment_reference?: string | null;
+  payment_status: PaymentStatus;
   notes?: string;
   created_at: string;
   updated_at: string;
