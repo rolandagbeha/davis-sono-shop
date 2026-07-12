@@ -10,6 +10,7 @@ import { notifyManagerNewOrder } from '../lib/whatsapp';
 import { validatePhone, validateEmail } from '../utils/validators';
 import type { CheckoutData, PaymentMethod } from '../types';
 import toast from 'react-hot-toast';
+import { trackEvent } from '../lib/analytics';
 
 const STEPS = [
   { id: 1, label: 'Vos informations', icon: User },
@@ -111,6 +112,14 @@ export default function Checkout() {
         delivery_instructions: data.delivery_instructions || undefined,
         payment_method:        data.payment_method,
         items:                 items.map(i => ({ product_id: i.product.id, quantity: i.quantity })),
+      });
+
+      trackEvent('purchase', {
+        transaction_id: order.order_number,
+        currency: 'XOF',
+        value: order.total,
+        shipping: order.delivery_fee,
+        items: order.items.map(i => ({ item_id: i.product_id, item_name: i.product_name, price: i.price, quantity: i.quantity })),
       });
 
       clearCart();

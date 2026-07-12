@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useReducer } from 'react';
 import type { ReactNode } from 'react';
 import type { CartItem, Product } from '../types';
 import toast from 'react-hot-toast';
+import { trackEvent } from '../lib/analytics';
 
 const CART_STORAGE_KEY = 'davis-sono-cart';
 
@@ -110,6 +111,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     toast.success(`${product.name} ajoute au panier`, {
       icon: '🛒',
       style: { background: '#0F1535', color: '#fff', border: '1px solid rgba(245,197,24,0.3)' },
+    });
+    trackEvent('add_to_cart', {
+      currency: 'XOF',
+      value: product.price * quantity,
+      items: [{ item_id: product.id, item_name: product.name, price: product.price, quantity }],
     });
   };
 
