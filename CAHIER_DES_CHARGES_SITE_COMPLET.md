@@ -1,62 +1,92 @@
-# Cahier des charges — Davis Sono Shop, v3 (mis à jour après la première session Claude Code)
+# Cahier des charges — Davis Sono Shop, v4 (mise à jour après la session du 12 juillet)
 
-Document de suivi vivant, en continuité de `HANDOFF_CLAUDE_CODE.md`. Re-analyse
-effectuée sur l'état réel du repo après une première session de travail de Claude Code
-(voir "État des lieux" ci-dessous) — objectif inchangé : (A) rendre le site réellement
-déployable et fiable, (B) l'enrichir de fonctionnalités qui construisent la confiance
-client et font revenir les acheteurs.
+Document de suivi vivant, en continuité de `HANDOFF_CLAUDE_CODE.md`. Objectif inchangé :
+(A) rendre le site réellement déployable et fiable, (B) l'enrichir de fonctionnalités qui
+construisent la confiance client et font revenir les acheteurs.
 
-## État des lieux à cette date (re-scan du repo)
+## État des lieux à cette date
 
-**Fait, vérifié dans le code :**
-- A2 — Rate limiting sur `/api/ai` : implémenté (`api/_rateLimit.ts`, table Postgres
-  `rate_limits`, fail-open si le limiteur échoue). ⚠️ Seuil actuel : 30 requêtes /
-  5 minutes par IP sur le chat — plus permissif que les ~15/heure visés initialement.
-  À resserrer ou à valider consciemment selon le budget Anthropic accepté.
-- A3 — `aria-label` ajoutés (bascule mot de passe `Login.tsx`, panier et menu mobile
-  `Navbar.tsx`).
-- A5 — CI GitHub Actions en place (`.github/workflows/ci.yml`) : `tsc -b`, lint,
-  build, et e2e checkout conditionnel si `DATABASE_URL` est configuré en secret. Bien
-  fait.
-- D2 — Sitemap dynamique : `scripts/generate-sitemap.mjs` interroge maintenant Neon et
-  ajoute une entrée par produit actif, lancé avant chaque build.
-- Bonus non demandé mais bienvenu : en-têtes de sécurité complets ajoutés dans
-  `vercel.json` (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy) et
-  cache long sur `/assets/*`. Auth restructurée en endpoints granulaires
-  (`api/auth/sign-in/email.ts`, `sign-up`, `sign-out`, `token`, `forget-password`,
-  `get-session`) plutôt qu'un seul catch-all — plus propre.
-- `tsc -b` passe sans erreur dans l'environnement de test actuel — bon signe pour A1.
+**Point de process — RÉSOLU.** Tout le travail était resté non commité sur `main`. Neuf
+commits logiques ont été créés (migration Neon, taxonomie catégories, assistant IA,
+correctifs sécurité/UX, sitemap, en-têtes de sécurité, tests e2e, docs) et poussés sur
+GitHub. **Depuis cette session, chaque nouveau chantier se fait sur une branche dédiée**,
+plus jamais directement sur `main` sans passer par ce point de contrôle.
 
-**Pas encore fait (vérifié par absence dans le repo) :**
-- D1 (OG dynamique par produit pour le partage WhatsApp) — `useDocumentMeta.ts` est
-  identique à avant, toujours purement client-side.
-- E1 à E8 (avis, liste de souhaits, fidélité, pages légales, newsletter, panier
-  abandonné, multilingue, blog) — aucun fichier trouvé, normal, c'est la Phase 2/3/4.
-- B1/B2 (compression images, découpage du bundle) — non vérifiées comme faites.
-- `A_FAIRE_MANUEL.md` n'a pas été créé — soit aucun blocage rencontré, soit la
-  consigne n'a pas été suivie. Les variables sensibles (`ANTHROPIC_API_KEY`,
-  `BLOB_READ_WRITE_TOKEN`, `SENDGRID_*`, `CRON_SECRET`) sont toujours vides dans
-  `.env.example` local, donc probablement pas encore configurées — normal, c'est à toi
-  de les fournir.
+**⚠️ Un seul point encore bloqué** : `.github/workflows/ci.yml` ne peut pas être poussé —
+le token GitHub utilisé n'a pas le scope `workflow` (GitHub refuse toute modification de
+fichier sous `.github/workflows/` sans ce scope, par sécurité). Le commit existe en local
+(`git log` le montre en tête de branche). Pour débloquer, une seule fois, avec accès
+navigateur :
+```
+gh auth refresh -h github.com -s workflow
+git push origin main
+```
 
-**⚠️ Point de process à corriger avant de continuer :** tout le travail est dans
-l'arbre de travail non commité, directement sur la branche `main` (`git status`
-confirme "On branch main", aucune branche dédiée créée, plus de trente fichiers
-modifiés/ajoutés jamais commités). La consigne donnée était de travailler sur une
-branche séparée avec des commits atomiques — ça n'a pas été suivi. Avant d'aller plus
-loin : fais relire/tester ce qui existe, puis commite (par petits lots logiques, pas un
-seul gros commit) sur une branche, ouvre une PR même si tu es seul dessus — ça te
-donne un point de retour propre si quelque chose casse plus tard. Deux fichiers
-`Audit_Complet_Davis_Sono_Shop.docx` et `Audit_Davis_Sono_Shop.docx` sont aussi apparus
-à la racine — à relire, ils contiennent probablement l'auto-évaluation de Claude Code
-sur cette session.
+**Fait et vérifié en vrai (contre la production, pas juste en lecture de code) :**
+- **A1 — Parcours complet testé en navigateur réel** contre `davis-sono-shop.vercel.app` :
+  catalogue → fiche produit → panier → checkout → confirmation (commande réelle créée,
+  prix recalculé serveur, stock décrémenté) → suivi de commande (fonctionne, un souci
+  initial venait du script de test, pas du site) → connexion admin → session persiste
+  après rechargement → upload d'image (retourne 200, testé avec et sans token).
+- **A2 — Rate limiting IA tranché : gardé à 30 req/5 min.** Raisonnement : c'est un chat
+  conversationnel multi-tours (comparer 3-4 produits = facilement 8-10 messages), pas un
+  endpoint ponctuel. La cible initiale de ~15/heure casserait une conversation normale de
+  plus de 10 minutes et bloquerait l'admin en train de rédiger plusieurs descriptions
+  produit d'affilée avec l'IA. Le seuil actuel protège contre le spam en rafale (l'attaque
+  réelle) sans gêner l'usage légitime ; le coût Haiku par requête est de toute façon
+  minime.
+- **A3 — Durcissement admin complété.** `aria-label` déjà faits. Testé et confirmé cette
+  session : `api/upload.ts` rejette bien un token absent (401) et un token invalide (401).
+  Testé et **corrigé** : `/admin/login` n'avait aucune protection brute-force (6+ tentatives
+  ratées d'affilée toutes acceptées sans ralentissement) — un rate limit IP (10 tentatives /
+  10 min) a été ajouté sur `api/auth/sign-in/email.ts`, vérifié en direct (11ᵉ tentative
+  → 429, connexion légitime toujours OK après reset du compteur).
+- **A4 — RLS et endpoints publics vérifiés programmatiquement** (requêtes SQL directes,
+  équivalent à un contrôle console) : aucune table sans RLS active, toutes les policies
+  restantes sont `TO authenticated` uniquement (plus aucune policy ni grant `anonymous`),
+  et les trois routes publiques (`/api/products`, `/api/orders` en GET, `/api/devis` en
+  POST) répondent correctement sans en-tête `Authorization`, pendant que le Data API brut
+  continue de rejeter toute requête sans jeton.
+- **A5 — CI en place**, poussée sur GitHub à l'exception du fichier workflow lui-même (voir
+  ci-dessus).
+- **D1 — Open Graph dynamique par produit, fait et vérifié en vrai.** `api/og.ts`
+  intercepte `/produit/:slug` (rewrite dans `vercel.json`, avant le catch-all SPA), relit
+  le produit en base et renvoie le `index.html` du site avec title/description/og:*/
+  twitter:* remplacés par le nom, prix, description et vraie photo du produit — testé en
+  direct : bonnes balises pour un produit réel, repli silencieux sur le HTML générique
+  pour un slug inexistant, aucune régression sur les autres pages, page produit toujours
+  pleinement fonctionnelle pour un visiteur normal (React prend le relais normalement).
+  A nécessité de supprimer la route `/api/auth/sign-up/email.ts` (jamais utilisée, aucun
+  formulaire d'inscription n'existe dans l'app) pour rester sous la limite de 12 fonctions
+  serverless du plan Vercel Hobby.
+- **H2 — Google Analytics 4 intégré** (mesure ID fourni par le client). Chargé via
+  `public/ga-init.js` (même origine, pas de `'unsafe-inline'` nécessaire dans la CSP) +
+  `<script>` externe `googletagmanager.com` — CSP étendue en conséquence, vérifié en
+  direct : zéro violation CSP, hits GA reçus. Suit les trois points demandés : visite de
+  page (à chaque changement de route), `add_to_cart`, `purchase` (avec valeur/articles,
+  noms d'événements standards GA4 — remonte automatiquement dans les rapports e-commerce
+  de GA4 sans configuration supplémentaire).
+- Variables ajoutées : `REPORT_TO_EMAIL` (email du client) et `CRON_SECRET` (généré) sur
+  Vercel Production et en local. `DATABASE_URL` ajoutée en secret GitHub Actions pour que
+  le test e2e tourne en CI une fois le workflow poussé.
+
+**Pas encore fait :**
+- B1/B2 (compression images, découpage du bundle) — non commencées.
+- D3 (JSON-LD), C1/C3 (référence transaction, garantie) — non vérifiées/faites.
+- E1 à E8 (Phase 2/3/4) — rien commencé, normal à ce stade.
+- H1 (nom de domaine), H3 (chiffrage budget) — non traitées, nécessitent une décision/achat
+  du client plutôt qu'un chantier technique pur.
+- `SENDGRID_API_KEY` / `SENDGRID_FROM_EMAIL` restent vides — le rapport hebdomadaire
+  (`api/weekly-report.ts`) est câblé et protégé (`CRON_SECRET` configuré) mais ne pourra
+  pas *envoyer* l'email tant qu'un compte SendGrid n'est pas créé et sa clé fournie. C'est
+  une dépendance externe, pas un blocage technique.
 
 ---
 
 ## 0. Contexte à garder en tête à chaque décision
 
 - Boutique réelle à Lomé, Togo (matériel audio + instruments, vente et location).
-  Développeur (Roland) au Mali, client final au Togo.
+  Développeur (Roland) au Mali, client final au Togo (davidsonserv@gmail.com).
 - Marché cible : connexions mobiles parfois lentes/coûteuses en data, paiement très
   majoritairement Mobile Money (Flooz, T-Money, Moov Money) et cash à la livraison,
   partage de produits massivement via WhatsApp plutôt que Facebook/Instagram, langue
@@ -65,48 +95,50 @@ sur cette session.
   custom : `bg-deep #08091A`, `gold #F5C518`, `cyan #00D4FF`, police `Space Grotesk`/
   `Inter`), React Router 7, Framer Motion, Neon (Postgres + Neon Auth + Data API),
   connexion Postgres directe (`api/_db.ts`) pour le trafic public, Vercel (hébergement
-  + fonctions serverless + Blob storage + Cron), Anthropic (assistant IA).
+  + fonctions serverless + Blob storage + Cron, **plan Hobby — plafond de 12 fonctions
+  serverless par déploiement, y compris les fichiers `api/auth/*`**), Anthropic
+  (assistant IA), Google Analytics 4.
 - Toute nouvelle table/route suit le pattern déjà en place : Data API pour l'admin
   authentifié, connexion Postgres directe pour le public/anonyme (voir 6.4bis du
   handoff pour le pourquoi).
+- Toute nouvelle route publique doit être passée par `checkRateLimit()`
+  (`api/_rateLimit.ts`) comme les routes existantes.
 - Après chaque chantier : `npm run build` et `npm run lint` doivent passer avant de
-  considérer le point comme terminé — et **committer** avant de passer au suivant.
+  considérer le point comme terminé — et **committer** (sur une branche dédiée) avant de
+  passer au suivant.
 
 ---
 
 ## PARTIE A — Mise en production solide (bloquant)
 
-### A1. Finaliser la migration Neon — À VÉRIFIER EN VRAI
-Le `tsc -b` passe, mais un test de bout en bout contre une vraie instance Neon
-(catalogue → panier → checkout → confirmation → suivi, + connexion admin persistante,
-+ upload d'image) n'a toujours pas été confirmé. **Critère d'acceptation inchangé.**
+### A1. Finaliser la migration Neon — FAIT, testé en vrai
+Voir "État des lieux" ci-dessus. Critère d'acceptation rempli.
 
-### A2. Rate limiting sur `/api/ai` — FAIT, à ajuster
-Implémenté. Décision à prendre consciemment : garder 30 req/5 min ou resserrer vers la
-cible initiale (~15/heure) selon le budget Anthropic que tu acceptes.
+### A2. Rate limiting sur `/api/ai` — FAIT, décision prise
+30 req / 5 min conservé consciemment. Voir raisonnement ci-dessus.
 
-### A3. Durcissement admin — PARTIELLEMENT FAIT
-`aria-label` ajoutés. Reste à vérifier : rate limit sur `/admin/login`, et test
-explicite que `api/upload.ts` rejette un token absent/invalide.
+### A3. Durcissement admin — FAIT
+aria-label, rejet de token absent/invalide sur l'upload, et rate limit brute-force sur
+`/admin/login` tous vérifiés/faits.
 
-### A4. Vérification RLS / endpoints publics — À FAIRE
-Toujours à confirmer dans la console Neon (aucune table admin "non protégée", les
-trois routes publiques répondent sans `Authorization`).
+### A4. Vérification RLS / endpoints publics — FAIT
+Vérifié par requêtes SQL directes (voir "État des lieux").
 
-### A5. CI minimale — FAIT
-`.github/workflows/ci.yml` en place et bien conçu.
+### A5. CI minimale — FAIT (poussée en attente du scope `workflow`)
+Voir le point de blocage en tête de document.
 
 ### A6. Variables d'environnement — tableau consolidé
 
 | Variable | Utilisée par | Statut |
 |---|---|---|
-| `VITE_NEON_AUTH_URL` / `NEON_AUTH_URL` | auth admin | à vérifier en local/Vercel |
-| `VITE_NEON_DATA_API_URL` / `NEON_DATA_API_URL` | Data API admin | à vérifier |
-| `DATABASE_URL` (pooled) | `api/_db.ts`, sitemap, CI e2e | à vérifier, **et à ajouter en secret GitHub pour la CI** |
-| `BLOB_READ_WRITE_TOKEN` | `api/upload.ts` | vide dans `.env.example` — à fournir |
-| `ANTHROPIC_API_KEY` | `api/ai.ts`, rapport hebdo | vide — à fournir |
-| `CRON_SECRET` | `api/weekly-report.ts` | vide — à générer |
-| `SENDGRID_API_KEY` / `SENDGRID_FROM_EMAIL` / `REPORT_TO_EMAIL` | rapport hebdo | vides — à fournir |
+| `VITE_NEON_AUTH_URL` / `NEON_AUTH_URL` | auth admin | ✅ configurée |
+| `VITE_NEON_DATA_API_URL` / `NEON_DATA_API_URL` | Data API admin | ✅ configurée |
+| `DATABASE_URL` (pooled) | `api/_db.ts`, sitemap, CI e2e | ✅ configurée (local, Vercel, secret GitHub) |
+| `BLOB_READ_WRITE_TOKEN` | `api/upload.ts` | ✅ configurée |
+| `ANTHROPIC_API_KEY` | `api/ai.ts`, rapport hebdo | ✅ configurée |
+| `CRON_SECRET` | `api/weekly-report.ts` | ✅ configurée (générée cette session) |
+| `REPORT_TO_EMAIL` | rapport hebdo | ✅ `davidsonserv@gmail.com` |
+| `SENDGRID_API_KEY` / `SENDGRID_FROM_EMAIL` | rapport hebdo | ❌ vides — compte SendGrid à créer par le client |
 | `SENTRY_DSN` (optionnel) | monitoring (B4) | nouveau si B4 retenu |
 
 ---
@@ -134,8 +166,8 @@ front et sur les fonctions `api/*.ts`.
 ## PARTIE C — Paiement & confiance transactionnelle
 
 ### C1. Référence de transaction Mobile Money — À VÉRIFIER
-`Checkout.tsx` a été modifié dans cette session — à relire précisément pour confirmer
-si le champ référence + statut `payment_pending` ont été ajoutés ou non.
+Pas retouché cette session — à relire pour confirmer si le champ référence + statut
+`payment_pending` existent.
 
 ### C2. Confirmation automatique au client (SMS/WhatsApp) — À FAIRE (Phase 4)
 
@@ -145,13 +177,11 @@ si le champ référence + statut `payment_pending` ont été ajoutés ou non.
 
 ## PARTIE D — SEO & partage social
 
-### D1. Open Graph dynamique par produit — À FAIRE, priorité haute
-Toujours purement client-side (`useDocumentMeta.ts` inchangé). Un lien produit partagé
-sur WhatsApp affiche encore le logo générique du site, jamais la photo/le prix du
-produit — c'est le point le plus rentable du document et il n'a pas encore été touché.
+### D1. Open Graph dynamique par produit — FAIT, testé en vrai
+Voir "État des lieux" ci-dessus.
 
 ### D2. Sitemap dynamique — FAIT
-`scripts/generate-sitemap.mjs` génère maintenant une entrée par produit actif.
+`scripts/generate-sitemap.mjs` génère une entrée par produit actif à chaque build.
 
 ### D3. Données structurées JSON-LD — À FAIRE
 
@@ -161,60 +191,59 @@ produit — c'est le point le plus rentable du document et il n'a pas encore ét
 
 E1 Avis clients · E2 Liste de souhaits · E3 Fidélité · E4 Pages légales (FAQ, CGV,
 confidentialité, retour) · E5 Newsletter · E6 Panier abandonné · E7 Multilingue FR/EN ·
-E8 Mini-blog. Détail inchangé par rapport à la version précédente de ce document — se
-référer aux descriptions détaillées déjà validées, non reproduites ici pour éviter la
-redondance ; demander si le détail complet doit être réintégré.
+E8 Mini-blog. Détail inchangé — demander si le détail complet doit être réintégré.
 
 ---
 
 ## PARTIE F — Ordre d'exécution mis à jour
 
-1. **Immédiat** — corriger le point de process (branche + commits), relire/tester A1
-   et C1 en vrai, décider du seuil de A2.
-2. **Phase 1 (reste à boucler)** — A1 (test réel), A4, B4 optionnel ici ou Phase 2.
-3. **Phase 2 (avant toute promotion)** — B1/B2, D1 (priorité haute), D3, E4, C1/C3, et
-   les trois points de la Partie H ci-dessous.
-4. **Phase 3** — E1, E2, E5, E6.
-5. **Phase 4** — E3, E7, E8, C2, B3 (cache avancé restant).
+1. **Immédiat** — débloquer le push de `ci.yml` (`gh auth refresh -s workflow`, une seule
+   fois, avec accès navigateur).
+2. **Phase 2 (avant toute promotion)** — B1/B2, D3, E4, C1/C3, H1 (nom de domaine),
+   B4 (monitoring).
+3. **Phase 3** — E1, E2, E5, E6.
+4. **Phase 4** — E3, E7, E8, C2, B3 (cache avancé restant).
 
 ---
 
 ## PARTIE G — Règles pour l'exécution (Claude Code)
 
-- **Travailler sur une branche dédiée, jamais directement sur `main`.** Ce point n'a
-  pas été respecté lors de la première session — à corriger dès maintenant pour la
-  suite.
+- **Travailler sur une branche dédiée, jamais directement sur `main`.** Corrigé cette
+  session (9+ commits rattrapés) — à respecter strictement à partir de maintenant.
 - Committer par petits lots logiques (un commit par point terminé), pas un gros commit
   final.
 - `npm run build` + `npm run lint` doivent passer après chaque chantier.
 - Respecter le design system existant et le pattern d'accès aux données déjà en place.
 - Toute nouvelle route serverless publique testée explicitement sans token et avec un
-  token invalide.
+  token invalide, **et passée par `checkRateLimit()`**.
+- **Vercel Hobby plafonne à 12 fonctions serverless par déploiement** (les fichiers
+  préfixés `_` ne comptent pas). Vérifier le compte avant d'ajouter une route ; consolider
+  ou supprimer une route inutilisée plutôt que de passer en Pro sans en discuter avec le
+  client.
 - Documenter toute nouvelle variable d'environnement dans `.env.example` et le tableau
   A6.
 - **Mettre à jour ce document à la fin de chaque session** (statuts FAIT/PARTIEL/À
-  FAIRE ci-dessus) — ça n'a pas été fait lors de la première session, c'est pourtant ce
-  qui permet de reprendre le travail sans tout re-analyser à chaque fois.
+  FAIRE) — fait cette fois-ci, à poursuivre.
 
 ---
 
-## PARTIE H — Domaine, mesure, budget (ajouté à cette révision)
+## PARTIE H — Domaine, mesure, budget
 
-### H1. Nom de domaine
+### H1. Nom de domaine — À FAIRE
 Le site est encore sur `davis-sono-shop.vercel.app` (visible aussi en dur dans
-`scripts/generate-sitemap.mjs`, `SITE_URL`). Un vrai domaine (`davissonoshop.tg` ou
-`.com`) est probablement l'investissement le plus rentable de tout ce document pour la
-perception de sérieux — à faire tôt, et à répercuter dans `SITE_URL` du script sitemap,
-les balises OG de `index.html`, et la config Vercel (domaine custom).
+`scripts/generate-sitemap.mjs` `SITE_URL`, `api/og.ts` fallback, et les balises OG de
+`index.html`). Probablement l'investissement le plus rentable de tout ce document pour la
+perception de sérieux — à faire tôt, et à répercuter dans ces trois endroits + la config
+Vercel (domaine custom).
 
-### H2. Mesure / analytics
-Aucun outil de suivi des visites ou des conversions actuellement. Ajouter un outil
-léger et respectueux de la vie privée (Plausible ou Google Analytics 4) pour suivre au
-minimum : visites catalogue, ajouts au panier, commandes finalisées. Sans ça, ni toi ni
-le client ne saurez si le site "attire des clients" ou pas — seulement des impressions.
+### H2. Mesure / analytics — FAIT
+Google Analytics 4 intégré et vérifié (voir "État des lieux"). Reste optionnel : créer un
+tableau de bord GA4 personnalisé côté console Google (hors du champ technique de ce repo)
+pour suivre spécifiquement le taux de conversion catalogue → achat.
 
-### H3. Budget
+### H3. Budget — À FAIRE
 Coûts à anticiper au-delà des tiers gratuits une fois le trafic réel : Twilio (SMS/
 WhatsApp, C2), SendGrid au-delà de 100 emails/jour, Sentry, nom de domaine (H1),
-éventuellement Vercel Pro si le trafic dépasse le plan gratuit. À chiffrer et à
-valider avec le client avant de lancer C2/E5/E6/H1/B4 en production.
+éventuellement **Vercel Pro si le nombre de fonctions serverless doit dépasser 12**
+(déjà au plafond avec 12 fonctions actuellement) ou si le trafic dépasse le plan gratuit.
+À chiffrer et à valider avec le client avant de lancer C2/E5/E6/H1/B4 en production.
