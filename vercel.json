@@ -3,6 +3,7 @@
     { "path": "/api/weekly-report", "schedule": "0 7 * * 1" }
   ],
   "rewrites": [
+    { "source": "/produit/:slug", "destination": "/api/og?slug=:slug" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
