@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ShoppingCart, Eye, MessageCircle, PackageCheck } from 'lucide-react';
 import type { Product } from '../../types';
 import { formatFCFA } from '../../utils/formatPrice';
@@ -23,10 +22,7 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
 
   if (layout === 'list') {
     return (
-      <motion.div
-        whileHover={{ x: 4 }}
-        className="card-hover flex gap-4 p-4 w-full"
-      >
+      <div className="card-hover flex gap-4 p-4 w-full">
         {/* Image */}
         <Link to={`/produit/${product.slug}`} className="flex-shrink-0">
           <div className="w-24 h-24 sm:w-32 sm:h-32 bg-bg-surface rounded-card overflow-hidden">
@@ -35,6 +31,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
                 src={thumbUrl}
                 alt={product.name}
                 onError={() => setImgError(true)}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -79,16 +77,12 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-      className="card-hover overflow-hidden group flex flex-col"
-    >
+    <div className="card-hover overflow-hidden group flex flex-col">
       {/* Image */}
       <Link to={`/produit/${product.slug}`} className="relative block">
         <div className="aspect-square bg-bg-surface overflow-hidden">
@@ -97,6 +91,8 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
               src={thumbUrl}
               alt={product.name}
               onError={() => setImgError(true)}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
@@ -178,6 +174,6 @@ export function ProductCard({ product, layout = 'grid' }: ProductCardProps) {
           </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

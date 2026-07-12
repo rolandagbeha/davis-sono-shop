@@ -5,14 +5,15 @@ import { FileText, Send, CheckCircle, Loader2 } from 'lucide-react';
 import { devisService } from '../hooks/useDevis';
 import { notifyManagerNewDevis } from '../lib/whatsapp';
 import { generateDevisNumber } from '../utils/orderNumber';
+import { validatePhone, validateEmail } from '../utils/validators';
 import type { Devis } from '../types';
 import toast from 'react-hot-toast';
 
 const USAGE_TYPES = [
-  'Événement (mariage, anniversaire, concert)',
-  'Installation permanente (église, salle, restaurant)',
+  'Evenement (mariage, anniversaire, concert)',
+  'Installation permanente (eglise, salle, restaurant)',
   'Studio d\'enregistrement',
-  'Formation / École de musique',
+  'Formation / Ecole de musique',
   'Autre',
 ];
 
@@ -40,7 +41,15 @@ export default function DevisRequest() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.client_name.trim())  { toast.error('Nom requis');      return; }
-    if (!form.client_phone.trim()) { toast.error('Téléphone requis'); return; }
+    if (!form.client_phone.trim()) { toast.error('Telephone requis'); return; }
+    if (!validatePhone(form.client_phone)) {
+      toast.error('Numero de telephone invalide (8 chiffres, ex : 98 42 32 32)');
+      return;
+    }
+    if (form.client_email.trim() && !validateEmail(form.client_email)) {
+      toast.error('Adresse email invalide');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -63,7 +72,7 @@ export default function DevisRequest() {
       notifyManagerNewDevis(devis);
       setSubmitted(true);
     } catch (err) {
-      toast.error('Erreur lors de l\'envoi. Réessayez.');
+      toast.error('Erreur lors de l\'envoi. Reessayez.');
     } finally {
       setLoading(false);
     }
@@ -80,14 +89,14 @@ export default function DevisRequest() {
           <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle size={48} className="text-green-400" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-white mb-3">Devis envoyé !</h2>
+          <h2 className="text-2xl font-heading font-bold text-white mb-3">Devis envoye !</h2>
           <p className="text-muted mb-8">
-            Nous avons bien reçu votre demande. Notre équipe vous recontactera sous 2h sur le{' '}
+            Nous avons bien recu votre demande. Notre equipe vous recontactera sous 2h sur le{' '}
             <span className="text-white font-mono">{form.client_phone}</span>.
           </p>
           <div className="flex flex-col gap-3">
             <button onClick={() => navigate('/')} className="btn-primary w-full justify-center">
-              Retour à l'accueil
+              Retour a l'accueil
             </button>
             <button onClick={() => navigate('/catalogue')} className="btn-secondary w-full justify-center">
               Voir le catalogue
@@ -111,7 +120,7 @@ export default function DevisRequest() {
             </div>
             <div>
               <h1 className="text-3xl font-heading font-bold text-white">Demande de devis</h1>
-              <p className="text-muted">Réponse garantie sous 2 heures</p>
+              <p className="text-muted">Reponse garantie sous 2 heures</p>
             </div>
           </div>
 
@@ -122,7 +131,7 @@ export default function DevisRequest() {
                 <input className="input" placeholder="Votre nom" value={form.client_name} onChange={e => set('client_name', e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm text-muted mb-2">Téléphone *</label>
+                <label className="block text-sm text-muted mb-2">Telephone *</label>
                 <input className="input" placeholder="98 42 32 32" type="tel" value={form.client_phone} onChange={e => set('client_phone', e.target.value)} required />
               </div>
             </div>
@@ -134,11 +143,11 @@ export default function DevisRequest() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-sm text-muted mb-2">Produit(s) concerné(s)</label>
+                <label className="block text-sm text-muted mb-2">Produit(s) concerne(s)</label>
                 <input className="input" placeholder="Ex : Enceinte JBL 15&quot;" value={form.product_name} onChange={e => set('product_name', e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm text-muted mb-2">Quantité</label>
+                <label className="block text-sm text-muted mb-2">Quantite</label>
                 <input
                   className="input"
                   type="number"
@@ -150,15 +159,15 @@ export default function DevisRequest() {
             </div>
 
             <div>
-              <label className="block text-sm text-muted mb-2">Usage prévu</label>
+              <label className="block text-sm text-muted mb-2">Usage prevu</label>
               <select className="input" value={form.usage_type} onChange={e => set('usage_type', e.target.value)}>
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Selectionner --</option>
                 {USAGE_TYPES.map(u => <option key={u} value={u}>{u}</option>)}
               </select>
             </div>
 
             <div>
-              <label className="block text-sm text-muted mb-2">Date souhaitée</label>
+              <label className="block text-sm text-muted mb-2">Date souhaitee</label>
               <input
                 className="input"
                 type="date"
@@ -169,10 +178,10 @@ export default function DevisRequest() {
             </div>
 
             <div>
-              <label className="block text-sm text-muted mb-2">Message / Détails supplémentaires</label>
+              <label className="block text-sm text-muted mb-2">Message / Details supplementaires</label>
               <textarea
                 className="input min-h-[100px] resize-none"
-                placeholder="Décrivez votre projet, vos besoins spécifiques…"
+                placeholder="Decrivez votre projet, vos besoins specifiques…"
                 value={form.message}
                 onChange={e => set('message', e.target.value)}
               />

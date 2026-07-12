@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ChangeEvent } from 'react';
 import { Search, X } from 'lucide-react';
 
@@ -32,13 +32,31 @@ export function SearchBar({
     if (externalValue !== undefined) setLocalValue(externalValue);
   }, [externalValue]);
 
-  // Debounce sur l'appel onChange
+  // onChange est souvent une closure inline recreee a chaque rendu du parent
+  // (ex: onChange={v => setParam('search', v)}). La stocker dans une ref
+  // evite que l'effet de debounce ci-dessous ne depende de son identite : sans
+  // ca, tout re-rendu du parent (meme sans rapport avec la recherche, comme un
+  // clic de pagination) redeclenchait ce timer, qui rappelait onChange(valeur
+  // inchangee) 300ms plus tard — et setParam() reinitialise systematiquement
+  // la page a 1, ce qui annulait silencieusement la pagination.
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // Ne pas appeler onChange au montage (localValue == externalValue initial,
+  // rien n'a change) — seulement quand l'utilisateur tape reellement.
+  const isFirstRun = useRef(true);
+
+  // Debounce sur l'appel onChange — ne depend que de la valeur locale.
   useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
     const timer = setTimeout(() => {
-      onChange(localValue);
+      onChangeRef.current(localValue);
     }, debounceMs);
     return () => clearTimeout(timer);
-  }, [localValue, debounceMs, onChange]);
+  }, [localValue, debounceMs]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setLocalValue(e.target.value);

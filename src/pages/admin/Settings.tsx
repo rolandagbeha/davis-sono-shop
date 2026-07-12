@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Save, Eye, EyeOff, Loader2, Check } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { Save, Loader2, Check, Mail } from 'lucide-react';
+import { client } from '../../lib/neon';
+import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const DELIVERY_ZONES = [
@@ -12,9 +13,9 @@ const DELIVERY_ZONES = [
 ];
 
 export default function AdminSettings() {
+  const { user } = useAuth();
   const [saving,   setSaving]   = useState(false);
-  const [showPass, setShowPass] = useState(false);
-  const [pwdForm,  setPwdForm]  = useState({ current: '', next: '', confirm: '' });
+  const [resetSent, setResetSent] = useState(false);
   const [info, setInfo] = useState({
     shop_name:      'Davis Sono Shop',
     shop_address:   'Lomé, Novissi, non loin de l\'UTB — Togo',
@@ -28,7 +29,7 @@ export default function AdminSettings() {
     try {
       const updates = Object.entries(info).map(([key, value]) => ({ key, value }));
       for (const u of updates) {
-        await supabase.from('settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() });
+        await client.from('settings').upsert({ key: u.key, value: u.value, updated_at: new Date().toISOString() });
       }
       toast.success('Paramètres sauvegardés');
     } catch {
@@ -38,16 +39,21 @@ export default function AdminSettings() {
     }
   };
 
+  // Neon Auth ne permet pas de changer le mot de passe directement via
+  // updateUser() (contrairement à Supabase) : on passe par l'email de
+  // reinitialisation, que l'admin recoit et utilise pour choisir un nouveau
+  // mot de passe.
   const handleChangePassword = async () => {
-    if (pwdForm.next !== pwdForm.confirm) { toast.error('Les mots de passe ne correspondent pas'); return; }
-    if (pwdForm.next.length < 6)          { toast.error('Mot de passe trop court (6 caractères min)'); return; }
+    if (!user?.email) { toast.error("Impossible de determiner l'email du compte"); return; }
     try {
-      const { error } = await supabase.auth.updateUser({ password: pwdForm.next });
+      const { error } = await client.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/admin/login`,
+      });
       if (error) throw error;
-      toast.success('Mot de passe modifié');
-      setPwdForm({ current: '', next: '', confirm: '' });
+      setResetSent(true);
+      toast.success('Email de reinitialisation envoye');
     } catch {
-      toast.error('Erreur modification mot de passe');
+      toast.error("Erreur lors de l'envoi de l'email de reinitialisation");
     }
   };
 
@@ -106,7 +112,7 @@ export default function AdminSettings() {
             </div>
           ))}
         </div>
-        <p className="text-muted text-xs mt-4">Pour modifier les tarifs, éditez directement la table `settings` dans Supabase.</p>
+        <p className="text-muted text-xs mt-4">Pour modifier les tarifs, éditez directement la table `settings` dans la console Neon.</p>
       </section>
 
       {/* Modes de paiement */}
@@ -135,28 +141,12 @@ export default function AdminSettings() {
         <h2 className="font-heading font-semibold text-white text-lg border-b border-white/10 pb-3">
           Sécurité — Changer le mot de passe
         </h2>
-        <div className="relative">
-          <input
-            type={showPass ? 'text' : 'password'}
-            className="input pr-10"
-            placeholder="Nouveau mot de passe"
-            value={pwdForm.next}
-            onChange={e => setPwdForm(p => ({ ...p, next: e.target.value }))}
-          />
-          <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-white">
-            {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
-        </div>
-        <input
-          type="password"
-          className="input"
-          placeholder="Confirmer le nouveau mot de passe"
-          value={pwdForm.confirm}
-          onChange={e => setPwdForm(p => ({ ...p, confirm: e.target.value }))}
-        />
-        <button onClick={handleChangePassword} className="btn-secondary">
-          <Save size={16} />
-          Modifier le mot de passe
+        <p className="text-muted text-sm">
+          Recevez un lien par email pour choisir un nouveau mot de passe pour {user?.email ?? 'votre compte'}.
+        </p>
+        <button onClick={handleChangePassword} disabled={resetSent} className="btn-secondary">
+          <Mail size={16} />
+          {resetSent ? 'Email envoyé' : "Envoyer l'email de réinitialisation"}
         </button>
       </section>
     </div>

@@ -7,7 +7,8 @@ import { orderService } from '../hooks/useOrders';
 import { formatFCFA } from '../utils/formatPrice';
 import { generateOrderNumber } from '../utils/orderNumber';
 import { notifyManagerNewOrder } from '../lib/whatsapp';
-import type { CheckoutData, PaymentMethod, OrderItem } from '../types';
+import { validatePhone, validateEmail } from '../utils/validators';
+import type { CheckoutData, PaymentMethod } from '../types';
 import toast from 'react-hot-toast';
 
 const STEPS = [
@@ -17,7 +18,7 @@ const STEPS = [
 ];
 
 const PAYMENT_METHODS: { value: PaymentMethod; label: string; icon: string }[] = [
-  { value: 'cash',       label: 'Paiement à la livraison', icon: '💵' },
+  { value: 'cash',       label: 'Paiement a la livraison', icon: '💵' },
   { value: 'moov_money', label: 'Moov Money',              icon: '📱' },
   { value: 't_money',    label: 'T-Money',                 icon: '📱' },
   { value: 'flooz',      label: 'Flooz',                   icon: '📱' },
@@ -25,8 +26,8 @@ const PAYMENT_METHODS: { value: PaymentMethod; label: string; icon: string }[] =
 ];
 
 const NEIGHBORHOODS = [
-  'Lomé Centre', 'Bé', 'Kodjoviakopé', 'Agbalépédogan',
-  'Adidogomé', 'Agoè', 'Novissi', 'Tokoin', 'Baguida',
+  'Lome Centre', 'Be', 'Kodjoviakope', 'Agbalepedogan',
+  'Adidogome', 'Agoe', 'Novissi', 'Tokoin', 'Baguida',
   'Aflao', 'Autre',
 ];
 
@@ -66,7 +67,15 @@ export default function Checkout() {
 
   const validateStep1 = () => {
     if (!data.client_name.trim())  { toast.error('Nom requis');      return false; }
-    if (!data.client_phone.trim()) { toast.error('Téléphone requis'); return false; }
+    if (!data.client_phone.trim()) { toast.error('Telephone requis'); return false; }
+    if (!validatePhone(data.client_phone)) {
+      toast.error('Numero de telephone invalide (8 chiffres, ex : 98 42 32 32)');
+      return false;
+    }
+    if (data.client_email.trim() && !validateEmail(data.client_email)) {
+      toast.error('Adresse email invalide');
+      return false;
+    }
     return true;
   };
 
@@ -87,17 +96,11 @@ export default function Checkout() {
     setLoading(true);
 
     try {
-      const orderItems: OrderItem[] = items.map(i => ({
-        product_id:    i.product.id,
-        product_name:  i.product.name,
-        product_image: i.product.images[0] ?? '',
-        price:         i.product.price,
-        quantity:      i.quantity,
-        subtotal:      i.product.price * i.quantity,
-      }));
-
       const orderNumber = generateOrderNumber();
 
+      // Seuls product_id + quantity sont envoyes : le prix/sous-total/total
+      // sont toujours recalcules cote serveur a partir du vrai stock/prix en
+      // base (empeche la survente et la manipulation de prix cote client).
       const order = await orderService.create({
         order_number:          orderNumber,
         client_name:           data.client_name,
@@ -107,21 +110,17 @@ export default function Checkout() {
         client_neighborhood:   data.client_neighborhood,
         delivery_instructions: data.delivery_instructions || undefined,
         payment_method:        data.payment_method,
-        items:                 orderItems,
-        subtotal:              totalPrice,
-        delivery_fee:          DELIVERY_FEE,
-        total,
-        status:                'pending',
+        items:                 items.map(i => ({ product_id: i.product.id, quantity: i.quantity })),
       });
 
       clearCart();
 
-      // Notifie le gérant via WhatsApp
+      // Notifie le gerant via WhatsApp
       notifyManagerNewOrder(order);
 
       navigate(`/confirmation/${order.order_number}`, { state: { order } });
     } catch (err) {
-      toast.error('Erreur lors de la commande. Veuillez réessayer.');
+      toast.error(err instanceof Error ? err.message : 'Erreur lors de la commande. Veuillez reessayer.');
     } finally {
       setLoading(false);
     }
@@ -162,7 +161,7 @@ export default function Checkout() {
           <div className="lg:col-span-2">
             <div className="card p-6">
               <AnimatePresence mode="wait">
-                {/* Étape 1 : Informations */}
+                {/* Etape 1 : Informations */}
                 {step === 1 && (
                   <motion.div
                     key="step1"
@@ -184,7 +183,7 @@ export default function Checkout() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-muted mb-2">Téléphone *</label>
+                      <label className="block text-sm text-muted mb-2">Telephone *</label>
                       <input
                         className="input"
                         placeholder="Ex : 98 42 32 32"
@@ -206,7 +205,7 @@ export default function Checkout() {
                   </motion.div>
                 )}
 
-                {/* Étape 2 : Livraison */}
+                {/* Etape 2 : Livraison */}
                 {step === 2 && (
                   <motion.div
                     key="step2"
@@ -225,17 +224,17 @@ export default function Checkout() {
                         value={data.client_neighborhood}
                         onChange={e => set('client_neighborhood', e.target.value)}
                       >
-                        <option value="">-- Sélectionner --</option>
+                        <option value="">-- Selectionner --</option>
                         {NEIGHBORHOODS.map(n => (
                           <option key={n} value={n}>{n}</option>
                         ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm text-muted mb-2">Adresse précise *</label>
+                      <label className="block text-sm text-muted mb-2">Adresse precise *</label>
                       <input
                         className="input"
-                        placeholder="Ex : Rue des Palmiers, en face du marché"
+                        placeholder="Ex : Rue des Palmiers, en face du marche"
                         value={data.client_address}
                         onChange={e => set('client_address', e.target.value)}
                       />
@@ -252,7 +251,7 @@ export default function Checkout() {
                   </motion.div>
                 )}
 
-                {/* Étape 3 : Paiement */}
+                {/* Etape 3 : Paiement */}
                 {step === 3 && (
                   <motion.div
                     key="step3"
@@ -315,10 +314,10 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Récapitulatif commande */}
+          {/* Recapitulatif commande */}
           <div className="lg:col-span-1">
             <div className="card p-5 sticky top-24">
-              <h3 className="font-heading font-semibold text-white mb-5">Récapitulatif</h3>
+              <h3 className="font-heading font-semibold text-white mb-5">Recapitulatif</h3>
               <div className="space-y-3 mb-5">
                 {items.map(item => (
                   <div key={item.product.id} className="flex gap-3">

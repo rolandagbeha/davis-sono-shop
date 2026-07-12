@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Menu, X, Phone } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 
 const NAV_LINKS = [
@@ -69,15 +69,6 @@ export function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-3">
-              {/* Téléphone */}
-              <a
-                href="tel:+22898423232"
-                className="hidden lg:flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors"
-              >
-                <Phone size={14} />
-                <span className="font-mono">98 42 32 32</span>
-              </a>
-
               {/* Panier */}
               <button
                 onClick={openCart}
@@ -100,6 +91,7 @@ export function Navbar() {
               {/* Menu mobile */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label={mobileOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
                 className="md:hidden p-2 text-muted hover:text-white transition-colors"
               >
                 {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -149,16 +141,6 @@ export function Navbar() {
               ))}
             </nav>
 
-            <div className="p-6 border-t border-white/10 space-y-3">
-              <a href="tel:+22898423232" className="flex items-center gap-2 text-muted hover:text-gold">
-                <Phone size={16} />
-                <span className="font-mono text-sm">98 42 32 32</span>
-              </a>
-              <a href="tel:+22890548382" className="flex items-center gap-2 text-muted hover:text-gold">
-                <Phone size={16} />
-                <span className="font-mono text-sm">90 54 83 82</span>
-              </a>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

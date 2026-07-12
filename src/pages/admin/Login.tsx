@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Music2, Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -39,9 +39,7 @@ export default function Login() {
       >
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gold/20 rounded-2xl mb-4">
-            <Music2 size={32} className="text-gold" />
-          </div>
+          <img src="/logo.jpg" alt="Davis Sono Shop" className="w-16 h-16 rounded-2xl bg-white object-cover mx-auto mb-4" />
           <h1 className="text-3xl font-heading font-bold text-white">Davis Sono</h1>
           <p className="text-muted mt-1">Administration</p>
         </div>
@@ -59,7 +57,7 @@ export default function Login() {
                 <input
                   type="email"
                   className="input pl-10"
-                  placeholder="admin@davissono.com"
+                  placeholder="admin@davissono.tg"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
@@ -82,6 +80,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
+                  aria-label={showPass ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-muted hover:text-white"
                 >
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}

@@ -1,8 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, Grid3X3, List, SlidersHorizontal, X, ChevronLeft, ChevronRight, Speaker } from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
+import type { ProductSortBy } from '../hooks/useProducts';
+import { useDocumentMeta } from '../hooks/useDocumentMeta';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductCardSkeleton } from '../components/ui/Spinner';
 import { SearchBar } from '../components/ui/SearchBar';
@@ -10,20 +12,22 @@ import { EmptyState } from '../components/ui/EmptyState';
 import type { ProductCategory } from '../types';
 
 const CATEGORIES: { value: ProductCategory | ''; label: string }[] = [
-  { value: '',             label: 'Toutes les catégories' },
-  { value: 'enceintes',    label: 'Enceintes' },
-  { value: 'mixage',       label: 'Mixage' },
-  { value: 'micros',       label: 'Micros & HF' },
-  { value: 'instruments',  label: 'Instruments' },
-  { value: 'eclairage',    label: 'Éclairage' },
-  { value: 'accessoires',  label: 'Accessoires' },
+  { value: '',               label: 'Toutes les categories' },
+  { value: 'sonorisation',   label: 'Sonorisation' },
+  { value: 'mixeurs',        label: 'Mixeurs & EQ' },
+  { value: 'amplificateurs', label: 'Amplificateurs' },
+  { value: 'claviers',       label: 'Claviers' },
+  { value: 'guitares',       label: 'Guitares & Basses' },
+  { value: 'batteries',      label: 'Batteries & Percus' },
+  { value: 'instruments',    label: 'Instruments' },
+  { value: 'accessoires',    label: 'Accessoires' },
 ];
 
 const SORT_OPTIONS = [
   { value: 'relevance', label: 'Pertinence' },
   { value: 'price_asc', label: 'Prix croissant' },
-  { value: 'price_desc', label: 'Prix décroissant' },
-  { value: 'newest',    label: 'Nouveautés' },
+  { value: 'price_desc', label: 'Prix decroissant' },
+  { value: 'newest',    label: 'Nouveautes' },
   { value: 'popular',   label: 'Populaires' },
 ];
 
@@ -33,15 +37,21 @@ export default function Catalogue() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [layout,        setLayout]      = useState<'grid' | 'list'>('grid');
   const [filtersOpen,   setFiltersOpen] = useState(false);
-  const [page,          setPage]        = useState(1);
 
   const category  = (searchParams.get('category') || '') as ProductCategory | '';
   const search    = searchParams.get('search') || '';
   const badge     = searchParams.get('badge') || '';
   const rentable  = searchParams.get('rentable') === 'true';
-  const sortBy    = (searchParams.get('sort') || 'relevance') as any;
+  const sortBy    = (searchParams.get('sort') || 'relevance') as ProductSortBy;
   const priceMin  = searchParams.get('pmin') ? parseInt(searchParams.get('pmin')!) : undefined;
   const priceMax  = searchParams.get('pmax') ? parseInt(searchParams.get('pmax')!) : undefined;
+  const page      = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+
+  const categoryLabel = CATEGORIES.find(c => c.value === category)?.label;
+  useDocumentMeta({
+    title: categoryLabel && category ? categoryLabel : 'Catalogue',
+    description: 'Decouvrez notre catalogue de materiel audio professionnel et instruments de musique a Lome, Togo : enceintes, mixeurs, amplis, guitares, claviers et plus.',
+  });
 
   const { products, total, isLoading } = useProducts({
     category:   category || undefined,
@@ -57,20 +67,26 @@ export default function Catalogue() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
 
+  const goToPage = useCallback((newPage: number) => {
+    const next = new URLSearchParams(searchParams);
+    if (newPage <= 1) next.delete('page');
+    else next.set('page', String(newPage));
+    setSearchParams(next);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [searchParams, setSearchParams]);
+
   const setParam = useCallback((key: string, value: string) => {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value); else next.delete(key);
+    next.delete('page');
     setSearchParams(next);
-    setPage(1);
   }, [searchParams, setSearchParams]);
-
-  useEffect(() => { setPage(1); }, [category, search, badge, rentable, sortBy, priceMin, priceMax]);
 
   const FilterPanel = () => (
     <div className="space-y-6">
-      {/* Catégories */}
+      {/* Categories */}
       <div>
-        <h4 className="font-heading font-semibold text-white mb-3 text-sm">Catégorie</h4>
+        <h4 className="font-heading font-semibold text-white mb-3 text-sm">Categorie</h4>
         <div className="space-y-2">
           {CATEGORIES.map(cat => (
             <label key={cat.value} className="flex items-center gap-2 cursor-pointer group">
@@ -95,7 +111,7 @@ export default function Catalogue() {
         <div className="space-y-2">
           {[
             { value: '',    label: 'Tous les produits' },
-            { value: 'new', label: 'Nouveautés' },
+            { value: 'new', label: 'Nouveautes' },
             { value: 'hot', label: 'Populaires' },
             { value: 'sale', label: 'Promotions' },
           ].map(opt => (
@@ -154,9 +170,9 @@ export default function Catalogue() {
         </div>
       </div>
 
-      {/* Disponibilité */}
+      {/* Disponibilite */}
       <div>
-        <h4 className="font-heading font-semibold text-white mb-3 text-sm">Disponibilité</h4>
+        <h4 className="font-heading font-semibold text-white mb-3 text-sm">Disponibilite</h4>
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -165,19 +181,19 @@ export default function Catalogue() {
             className="accent-gold"
           />
           <span className="text-sm text-muted hover:text-white transition-colors">
-            Disponible à la location
+            Disponible a la location
           </span>
         </label>
       </div>
 
-      {/* Réinitialiser */}
+      {/* Reinitialiser */}
       <button
         type="button"
-        onClick={() => { setSearchParams(new URLSearchParams()); setPage(1); }}
+        onClick={() => setSearchParams(new URLSearchParams())}
         className="text-sm text-muted hover:text-gold transition-colors flex items-center gap-1"
       >
         <X size={14} />
-        Tout réinitialiser
+        Tout reinitialiser
       </button>
     </div>
   );
@@ -189,7 +205,7 @@ export default function Catalogue() {
         <div className="container-main px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-heading font-bold text-white mb-2">Catalogue</h1>
           <p className="text-muted">
-            {isLoading ? 'Chargement…' : `${total} produit${total > 1 ? 's' : ''} trouvé${total > 1 ? 's' : ''}`}
+            {isLoading ? 'Chargement…' : `${total} produit${total > 1 ? 's' : ''} trouve${total > 1 ? 's' : ''}`}
           </p>
         </div>
       </div>
@@ -273,21 +289,18 @@ export default function Catalogue() {
             ) : products.length === 0 ? (
               <EmptyState
                 icon={<Speaker size={64} />}
-                title="Aucun produit trouvé"
+                title="Aucun produit trouve"
                 description="Essayez de modifier vos filtres ou votre recherche."
                 action={{ label: 'Voir tous les produits', onClick: () => setSearchParams(new URLSearchParams()) }}
               />
             ) : (
-              <motion.div
-                key={`${category}-${search}-${page}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+              <div
                 className={layout === 'grid' ? 'products-grid' : 'space-y-4'}
               >
                 {products.map(product => (
                   <ProductCard key={product.id} product={product} layout={layout} />
                 ))}
-              </motion.div>
+              </div>
             )}
 
             {/* Pagination */}
@@ -295,8 +308,8 @@ export default function Catalogue() {
               <div className="flex items-center justify-center gap-2 mt-12">
                 <button
                   type="button"
-                  title="Page précédente"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  title="Page precedente"
+                  onClick={() => goToPage(page - 1)}
                   disabled={page === 1}
                   className="p-2 rounded-btn border border-white/10 text-muted hover:text-white hover:border-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
@@ -304,15 +317,20 @@ export default function Catalogue() {
                 </button>
 
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
-                  .map((p, idx, arr) => (
-                    <span key={p}>
-                      {idx > 0 && arr[idx - 1] !== p - 1 && (
-                        <span className="text-muted px-1">…</span>
-                      )}
+                  .filter(p => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                  .reduce<number[]>((acc, p) => {
+                    if (acc.length > 0 && p - acc[acc.length - 1] > 1) acc.push(-1);
+                    acc.push(p);
+                    return acc;
+                  }, [])
+                  .map((p, idx) =>
+                    p === -1 ? (
+                      <span key={`ellipsis-${idx}`} className="text-muted px-1 select-none">…</span>
+                    ) : (
                       <button
+                        key={p}
                         type="button"
-                        onClick={() => setPage(p)}
+                        onClick={() => goToPage(p)}
                         className={`w-9 h-9 rounded-btn font-mono text-sm transition-colors ${
                           p === page
                             ? 'bg-gold text-bg-deep font-bold'
@@ -321,14 +339,14 @@ export default function Catalogue() {
                       >
                         {p}
                       </button>
-                    </span>
-                  ))
+                    )
+                  )
                 }
 
                 <button
                   type="button"
                   title="Page suivante"
-                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  onClick={() => goToPage(page + 1)}
                   disabled={page === totalPages}
                   className="p-2 rounded-btn border border-white/10 text-muted hover:text-white hover:border-gold/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >

@@ -1,15 +1,17 @@
 import { useState, useRef } from 'react';
-import { Plus, Pencil, Trash2, Copy, Search, X, Loader2, Check, Upload, ImagePlus } from 'lucide-react';
-import { useProducts, productService } from '../../hooks/useProducts';
+import { Plus, Pencil, Trash2, Copy, Search, X, Loader2, Check, Upload, ImagePlus, Sparkles } from 'lucide-react';
+import { useAdminProducts, productService } from '../../hooks/useProducts';
 import type { Product, ProductCategory, ProductBadge } from '../../types';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { Skeleton } from '../../components/ui/Spinner';
 import { formatFCFA } from '../../utils/formatPrice';
 import { generateSlug } from '../../utils/orderNumber';
+import { useAuth } from '../../context/AuthContext';
+import { aiGenerateDescription } from '../../lib/ai';
 import toast from 'react-hot-toast';
 
-const CATEGORIES: ProductCategory[] = ['enceintes', 'mixage', 'micros', 'instruments', 'eclairage', 'accessoires'];
+const CATEGORIES: ProductCategory[] = ['sonorisation', 'mixeurs', 'amplificateurs', 'claviers', 'guitares', 'batteries', 'instruments', 'accessoires'];
 const BADGES: { value: ProductBadge; label: string }[] = [
   { value: null,   label: 'Aucun' },
   { value: 'new',  label: 'Nouveau' },
@@ -18,12 +20,13 @@ const BADGES: { value: ProductBadge; label: string }[] = [
 ];
 
 const EMPTY_PRODUCT: Partial<Product> = {
-  name: '', category: 'enceintes', short_description: '', description: '',
+  name: '', category: 'sonorisation', short_description: '', description: '',
   price: 0, stock: 0, stock_alert: 5, is_active: true, is_rentable: false,
   badge: null, specs: [], images: [], rental_price_day: undefined,
 };
 
 export default function AdminProducts() {
+  const { session } = useAuth();
   const [search,  setSearch]  = useState('');
   const [isModal, setIsModal] = useState(false);
   const [editing, setEditing] = useState<Partial<Product>>(EMPTY_PRODUCT);
@@ -33,12 +36,12 @@ export default function AdminProducts() {
   const [uploading,  setUploading]  = useState(false);
   const [dragOver,   setDragOver]   = useState(false);
   const [urlInput,   setUrlInput]   = useState('');
+  const [generatingDesc, setGeneratingDesc] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const tempIdRef    = useRef(`temp-${Date.now()}`);
 
-  const { products, isLoading, refetch } = useProducts({
+  const { products, isLoading, refetch } = useAdminProducts({
     search: search || undefined,
-    isActive: undefined,
   });
 
   const openNew = () => {
@@ -53,7 +56,7 @@ export default function AdminProducts() {
 
   const handleSave = async () => {
     if (!editing.name?.trim())  { toast.error('Nom requis');      return; }
-    if (!editing.category)      { toast.error('Catégorie requise'); return; }
+    if (!editing.category)      { toast.error('Categorie requise'); return; }
     if ((editing.price ?? 0) <= 0) { toast.error('Prix requis'); return; }
 
     setSaving(true);
@@ -61,15 +64,15 @@ export default function AdminProducts() {
       const slug = generateSlug(editing.name!);
       if (editing.id) {
         await productService.update(editing.id, { ...editing, slug });
-        toast.success('Produit mis à jour');
+        toast.success('Produit mis a jour');
       } else {
         await productService.create({ ...editing, slug });
-        toast.success('Produit créé');
+        toast.success('Produit cree');
       }
       setIsModal(false);
       refetch();
-    } catch (e: any) {
-      toast.error(e.message || 'Erreur lors de la sauvegarde');
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Erreur lors de la sauvegarde');
     } finally {
       setSaving(false);
     }
@@ -79,7 +82,7 @@ export default function AdminProducts() {
     if (!confirm(`Supprimer "${name}" ?`)) return;
     try {
       await productService.delete(id);
-      toast.success('Produit supprimé');
+      toast.success('Produit supprime');
       refetch();
     } catch { toast.error('Erreur suppression'); }
   };
@@ -99,8 +102,33 @@ export default function AdminProducts() {
     setEditing(e => ({ ...e, specs: (e.specs || []).filter((_, idx) => idx !== i) }));
   };
 
-  const set = (key: keyof Product, value: any) =>
+  const set = <K extends keyof Product,>(key: K, value: Product[K]) =>
     setEditing(e => ({ ...e, [key]: value }));
+
+  const handleGenerateDescription = async () => {
+    if (!editing.name?.trim()) { toast.error('Renseignez d\'abord le nom du produit'); return; }
+    if (!session?.access_token) { toast.error('Session expiree, reconnectez-vous'); return; }
+
+    setGeneratingDesc(true);
+    try {
+      const result = await aiGenerateDescription(
+        editing.name,
+        editing.category ?? '',
+        editing.short_description || '',
+        session.access_token,
+      );
+      setEditing(e => ({
+        ...e,
+        short_description: result.short_description || e.short_description,
+        description: result.description || e.description,
+      }));
+      toast.success('Description generee par l\'IA');
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : 'Erreur lors de la generation');
+    } finally {
+      setGeneratingDesc(false);
+    }
+  };
 
   const removeImage = (idx: number) =>
     setEditing(e => ({ ...e, images: (e.images ?? []).filter((_, i) => i !== idx) }));
@@ -118,7 +146,7 @@ export default function AdminProducts() {
     const uploaded: string[] = [];
     for (const file of Array.from(files)) {
       try {
-        const url = await productService.uploadImage(file, id);
+        const url = await productService.uploadImage(file, id, session?.access_token);
         uploaded.push(url);
       } catch { /* ignore individual failures */ }
     }
@@ -169,7 +197,7 @@ export default function AdminProducts() {
           <table className="w-full text-sm">
             <thead className="border-b border-white/10">
               <tr>
-                {['Produit', 'Catégorie', 'Prix', 'Stock', 'Badge', 'Statut', 'Actions'].map(h => (
+                {['Produit', 'Categorie', 'Prix', 'Stock', 'Badge', 'Statut', 'Actions'].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-muted font-medium text-xs uppercase">{h}</th>
                 ))}
               </tr>
@@ -241,14 +269,14 @@ export default function AdminProducts() {
               <input className="input" value={editing.name ?? ''} onChange={e => set('name', e.target.value)} placeholder="Ex : Enceinte JBL PRX815" />
             </div>
             <div>
-              <label htmlFor="prod-category" className="block text-sm text-muted mb-2">Catégorie *</label>
+              <label htmlFor="prod-category" className="block text-sm text-muted mb-2">Categorie *</label>
               <select id="prod-category" className="input" value={editing.category} onChange={e => set('category', e.target.value as ProductCategory)}>
                 {CATEGORIES.map(c => <option key={c} value={c} className="capitalize">{c}</option>)}
               </select>
             </div>
             <div>
               <label htmlFor="prod-badge" className="block text-sm text-muted mb-2">Badge</label>
-              <select id="prod-badge" className="input" value={editing.badge ?? ''} onChange={e => set('badge', e.target.value || null)}>
+              <select id="prod-badge" className="input" value={editing.badge ?? ''} onChange={e => set('badge', (e.target.value || null) as ProductBadge)}>
                 {BADGES.map(b => <option key={String(b.value)} value={b.value ?? ''}>{b.label}</option>)}
               </select>
             </div>
@@ -268,19 +296,30 @@ export default function AdminProducts() {
               <label htmlFor="prod-stock-alert" className="block text-sm text-muted mb-2">Alerte stock minimum</label>
               <input id="prod-stock-alert" className="input" type="number" min={0} value={editing.stock_alert ?? 5} onChange={e => set('stock_alert', parseInt(e.target.value) || 5)} placeholder="5" />
             </div>
+            <div className="sm:col-span-2 flex items-center justify-between">
+              <label className="block text-sm text-muted">Descriptions</label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={generatingDesc}
+                className="text-xs px-3 py-1.5 rounded-full border border-gold/40 text-gold hover:bg-gold/10 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {generatingDesc ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+                {generatingDesc ? 'Generation…' : 'Generer avec l\'IA'}
+              </button>
+            </div>
             <div className="sm:col-span-2">
               <label className="block text-sm text-muted mb-2">Description courte</label>
-              <input className="input" value={editing.short_description ?? ''} onChange={e => set('short_description', e.target.value)} placeholder="Résumé en une phrase" />
+              <input className="input" value={editing.short_description ?? ''} onChange={e => set('short_description', e.target.value)} placeholder="Resume en une phrase" />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm text-muted mb-2">Description complète</label>
+              <label className="block text-sm text-muted mb-2">Description complete</label>
               <textarea className="input min-h-[100px] resize-none" value={editing.description ?? ''} onChange={e => set('description', e.target.value)} />
             </div>
-            {/* ── Images ── */}
+            {/* Images */}
             <div className="sm:col-span-2">
               <label className="block text-sm text-muted mb-2">Images du produit</label>
 
-              {/* Prévisualisations */}
               {(editing.images ?? []).length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-3">
                   {(editing.images ?? []).map((img, i) => (
@@ -302,7 +341,6 @@ export default function AdminProducts() {
                 </div>
               )}
 
-              {/* Zone drag & drop */}
               <input
                 ref={fileInputRef}
                 type="file"
@@ -324,7 +362,7 @@ export default function AdminProducts() {
                 {uploading ? (
                   <div className="flex items-center justify-center gap-2 text-muted">
                     <Loader2 size={16} className="animate-spin text-gold" />
-                    <span className="text-sm">Téléchargement…</span>
+                    <span className="text-sm">Telechargement…</span>
                   </div>
                 ) : (
                   <>
@@ -338,11 +376,10 @@ export default function AdminProducts() {
                 )}
               </div>
 
-              {/* URL externe fallback */}
               <div className="flex gap-2 mt-2">
                 <input
                   className="input flex-1 !py-2 text-xs"
-                  placeholder="Ou collez une URL d'image et appuyez sur Entrée…"
+                  placeholder="Ou collez une URL d'image et appuyez sur Entree…"
                   value={urlInput}
                   onChange={e => setUrlInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addImageUrl(); } }}
@@ -358,9 +395,9 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            {/* Spécifications techniques */}
+            {/* Specifications techniques */}
             <div className="sm:col-span-2">
-              <label className="block text-sm text-muted mb-3">Spécifications techniques</label>
+              <label className="block text-sm text-muted mb-3">Specifications techniques</label>
               <div className="space-y-2 mb-3">
                 {(editing.specs ?? []).map((spec, i) => (
                   <div key={i} className="flex items-center gap-2 bg-bg-surface rounded-btn px-3 py-2">
@@ -373,7 +410,7 @@ export default function AdminProducts() {
               <div className="flex gap-2">
                 <input aria-label="Label de la spec" className="input flex-1 !py-2 text-sm" placeholder="Label (ex: Puissance)" value={specKey} onChange={e => setSpecKey(e.target.value)} />
                 <input aria-label="Valeur de la spec" className="input flex-1 !py-2 text-sm" placeholder="Valeur (ex: 2000W)" value={specVal} onChange={e => setSpecVal(e.target.value)} />
-                <button type="button" title="Ajouter cette spécification" onClick={addSpec} className="btn-secondary !py-2 !px-4">
+                <button type="button" title="Ajouter cette specification" onClick={addSpec} className="btn-secondary !py-2 !px-4">
                   <Plus size={16} />
                 </button>
               </div>
@@ -387,7 +424,7 @@ export default function AdminProducts() {
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={editing.is_rentable ?? false} onChange={e => set('is_rentable', e.target.checked)} className="accent-gold" />
-                <span className="text-sm text-muted">Disponible à la location</span>
+                <span className="text-sm text-muted">Disponible a la location</span>
               </label>
             </div>
           </div>

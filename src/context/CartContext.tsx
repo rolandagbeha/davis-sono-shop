@@ -1,7 +1,20 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useEffect, useReducer } from 'react';
 import type { ReactNode } from 'react';
 import type { CartItem, Product } from '../types';
 import toast from 'react-hot-toast';
+
+const CART_STORAGE_KEY = 'davis-sono-cart';
+
+function loadPersistedItems(): CartItem[] {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 interface CartState {
   items: CartItem[];
@@ -73,7 +86,20 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { items: [], isOpen: false });
+  const [state, dispatch] = useReducer(
+    cartReducer,
+    { items: [], isOpen: false },
+    (initial) => ({ ...initial, items: loadPersistedItems() }),
+  );
+
+  // Persiste le panier a chaque changement pour survivre a un rafraichissement
+  useEffect(() => {
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.items));
+    } catch {
+      // stockage indisponible (mode prive, quota) - on ignore silencieusement
+    }
+  }, [state.items]);
 
   const addItem = (product: Product, quantity = 1) => {
     if (product.stock === 0) {
@@ -81,7 +107,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
     dispatch({ type: 'ADD_ITEM', product, quantity });
-    toast.success(`${product.name} ajouté au panier`, {
+    toast.success(`${product.name} ajoute au panier`, {
       icon: '🛒',
       style: { background: '#0F1535', color: '#fff', border: '1px solid rgba(245,197,24,0.3)' },
     });
@@ -111,6 +137,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 export function useCart(): CartContextValue {
   const ctx = useContext(CartContext);
-  if (!ctx) throw new Error('useCart doit être utilisé dans CartProvider');
+  if (!ctx) throw new Error('useCart doit etre utilise dans CartProvider');
   return ctx;
 }

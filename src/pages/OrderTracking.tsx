@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Package, Loader2, CheckCircle, Clock, Truck, XCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { formatFCFA } from '../utils/formatPrice';
 import type { Order, OrderStatus } from '../types';
 import { Link } from 'react-router-dom';
@@ -35,17 +34,17 @@ export default function OrderTracking() {
     setOrder(null);
 
     try {
-      const { data, error: err } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('order_number', orderNumber.trim().toUpperCase())
-        .eq('client_phone', phone.trim())
-        .single();
+      const params = new URLSearchParams({
+        order_number: orderNumber.trim().toUpperCase(),
+        phone:        phone.trim(),
+      });
+      const res  = await fetch(`/api/orders?${params.toString()}`);
+      const body = await res.json();
 
-      if (err || !data) {
+      if (!res.ok || !body.order) {
         setError('Commande introuvable. Vérifiez le numéro et le téléphone.');
       } else {
-        setOrder(data as Order);
+        setOrder(body.order as Order);
       }
     } catch {
       setError('Erreur de connexion. Réessayez.');
