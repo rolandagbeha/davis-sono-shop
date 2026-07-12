@@ -8,7 +8,9 @@ inspirée d'Alibaba, adaptée au marché africain. Prototype SaaS multi-vendeurs
 - **React + Vite + TypeScript** — Frontend rapide et typé
 - **Tailwind CSS** — Design system dark mode sur mesure
 - **React Router v6** — Navigation SPA
-- **Supabase** — Auth, PostgreSQL, Storage, Realtime
+- **Neon** — Postgres + Neon Auth + Data API (voir `neon/schema.sql`)
+- **Vercel Blob** — Stockage des images produit
+- **Anthropic Claude** — Assistant IA (chat client, recommandations, assistant admin)
 - **Recharts** — Graphiques dashboard
 - **Framer Motion** — Animations fluides
 - **React Hot Toast** — Notifications
@@ -19,17 +21,23 @@ inspirée d'Alibaba, adaptée au marché africain. Prototype SaaS multi-vendeurs
 ```bash
 npm install
 cp .env.example .env
-# Remplir VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
+# Remplir VITE_NEON_AUTH_URL, VITE_NEON_DATA_API_URL, NEON_AUTH_URL, NEON_DATA_API_URL,
+# BLOB_READ_WRITE_TOKEN et ANTHROPIC_API_KEY
 npm run dev
 ```
 
-## Config Supabase
+## Config Neon
 
-1. Créer un projet sur [supabase.com](https://supabase.com)
-2. Exécuter `supabase/migrations.sql` dans l'éditeur SQL
-3. Exécuter `supabase/seed.sql` pour les 12 produits de démo
-4. Créer un utilisateur admin dans Authentication > Users
-5. Créer un bucket Storage public `product-images`
+1. Créer un projet sur [console.neon.tech](https://console.neon.tech)
+2. Activer **Data API** (coche "Use Neon Auth" et "Grant public schema access")
+3. Exécuter `neon/schema.sql` dans le SQL Editor
+4. Copier l'Auth URL (onglet Auth > Configuration) et la Data API URL (onglet Data API)
+   dans `.env`
+5. Créer un compte admin (onglet Auth > Users, ou via un flux sign-up)
+6. Rattacher un store Vercel Blob au projet (Vercel > Storage > Blob) pour l'upload
+   d'images produit
+
+Détails complets et checklist de vérification : voir `HANDOFF_CLAUDE_CODE.md`.
 
 ## Déploiement Vercel
 
@@ -40,7 +48,7 @@ vercel
 
 ## Admin
 
-Accès : `/admin/login` avec les identifiants Supabase Auth
+Accès : `/admin/login` avec les identifiants Neon Auth
 
 ## Contacts boutique
 
