@@ -3,7 +3,7 @@
 .env.local
 .env.*.local
 
-# Photos produits locales — à uploader sur Supabase Storage
+# Photos produits locales — à uploader sur Vercel Blob
 images/
 
 # Logs
@@ -32,3 +32,7 @@ dist-ssr
 *.sw?
 
 .vercel
+
+.env*
+
+.claude/
