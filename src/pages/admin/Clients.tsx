@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, Crown, User, Star } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { client } from '../../lib/neon';
 import { formatFCFA } from '../../utils/formatPrice';
 import { Skeleton } from '../../components/ui/Spinner';
 
@@ -13,9 +13,17 @@ interface ClientProfile {
   last_order_date: string;
 }
 
+interface OrderClientRow {
+  client_name:  string;
+  client_phone: string;
+  client_email: string | null;
+  total:        number | null;
+  created_at:   string;
+}
+
 function getSegment(totalSpent: number): { label: string; icon: React.ElementType; color: string } {
   if (totalSpent >= 500000) return { label: 'VIP',        icon: Crown,  color: 'text-gold' };
-  if (totalSpent >= 100000) return { label: 'Régulier',   icon: Star,   color: 'text-cyan' };
+  if (totalSpent >= 100000) return { label: 'Regulier',   icon: Star,   color: 'text-cyan' };
   return                           { label: 'Nouveau',    icon: User,   color: 'text-muted' };
 }
 
@@ -28,15 +36,15 @@ export default function AdminClients() {
     const fetchClients = async () => {
       setIsLoading(true);
       try {
-        const { data } = await supabase
+        const { data } = await client
           .from('orders')
           .select('client_name, client_phone, client_email, total, created_at');
 
         if (!data) return;
 
-        // Agrège par téléphone
+        // Agrege par telephone
         const map = new Map<string, ClientProfile>();
-        data.forEach((o: any) => {
+        (data as OrderClientRow[]).forEach((o) => {
           const key = o.client_phone;
           if (map.has(key)) {
             const existing = map.get(key)!;
@@ -50,7 +58,7 @@ export default function AdminClients() {
             map.set(key, {
               phone:           o.client_phone,
               name:            o.client_name,
-              email:           o.client_email,
+              email:           o.client_email ?? undefined,
               order_count:     1,
               total_spent:     o.total ?? 0,
               last_order_date: o.created_at,
@@ -76,14 +84,14 @@ export default function AdminClients() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-heading font-bold text-white">Clients</h1>
-        <p className="text-muted text-sm">{clients.length} client{clients.length > 1 ? 's' : ''} enregistrés</p>
+        <p className="text-muted text-sm">{clients.length} client{clients.length > 1 ? 's' : ''} enregistres</p>
       </div>
 
       {/* Stats segment */}
       <div className="grid grid-cols-3 gap-4">
         {[
           { label: 'VIP (>500k)', count: clients.filter(c => c.total_spent >= 500000).length, color: 'text-gold', bg: 'bg-gold/10' },
-          { label: 'Réguliers', count: clients.filter(c => c.total_spent >= 100000 && c.total_spent < 500000).length, color: 'text-cyan', bg: 'bg-cyan/10' },
+          { label: 'Reguliers', count: clients.filter(c => c.total_spent >= 100000 && c.total_spent < 500000).length, color: 'text-cyan', bg: 'bg-cyan/10' },
           { label: 'Nouveaux', count: clients.filter(c => c.total_spent < 100000).length, color: 'text-muted', bg: 'bg-white/5' },
         ].map(seg => (
           <div key={seg.label} className={`card p-4 text-center ${seg.bg}`}>
@@ -96,7 +104,7 @@ export default function AdminClients() {
       {/* Recherche */}
       <input
         className="input"
-        placeholder="Rechercher un client (nom ou téléphone)…"
+        placeholder="Rechercher un client (nom ou telephone)…"
         value={search}
         onChange={e => setSearch(e.target.value)}
       />
@@ -107,7 +115,7 @@ export default function AdminClients() {
           <table className="w-full text-sm">
             <thead className="border-b border-white/10">
               <tr>
-                {['Client', 'Téléphone', 'Commandes', 'Total dépensé', 'Segment', 'Dernière commande', 'Action'].map(h => (
+                {['Client', 'Telephone', 'Commandes', 'Total depense', 'Segment', 'Derniere commande', 'Action'].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-muted font-medium text-xs uppercase">{h}</th>
                 ))}
               </tr>

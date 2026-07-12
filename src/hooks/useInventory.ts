@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { client } from '../lib/neon';
 import type { Product, StockMovement } from '../types';
 import toast from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ export function useInventory() {
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error: err } = await supabase
+      const { data, error: err } = await client
         .from('products')
         .select('id, name, category, stock, stock_alert, images, is_active')
         .order('stock', { ascending: true });
@@ -39,7 +39,7 @@ export function useInventory() {
 
     try {
       // Met à jour le stock produit
-      await supabase
+      await client
         .from('products')
         .update({ stock: newStock, updated_at: new Date().toISOString() })
         .eq('id', productId);
@@ -51,7 +51,7 @@ export function useInventory() {
         quantity:   Math.abs(newStock - product.stock),
         reason,
       };
-      await supabase.from('stock_movements').insert(movement);
+      await client.from('stock_movements').insert(movement);
 
       setProducts(prev =>
         prev.map(p => (p.id === productId ? { ...p, stock: newStock } : p)),
@@ -64,7 +64,7 @@ export function useInventory() {
   };
 
   const getMovements = async (productId: string): Promise<StockMovement[]> => {
-    const { data } = await supabase
+    const { data } = await client
       .from('stock_movements')
       .select('*')
       .eq('product_id', productId)

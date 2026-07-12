@@ -7,7 +7,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { supabase } from '../../lib/supabase';
+import { client } from '../../lib/neon';
 import { useOrders } from '../../hooks/useOrders';
 import { useDevis } from '../../hooks/useDevis';
 import { formatFCFA } from '../../utils/formatPrice';
@@ -25,12 +25,17 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 const MONTH_LABELS: Record<number, string> = {
-  1: 'Jan', 2: 'Fév', 3: 'Mar', 4: 'Avr', 5: 'Mai', 6: 'Juin',
-  7: 'Juil', 8: 'Août', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Déc',
+  1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Avr', 5: 'Mai', 6: 'Juin',
+  7: 'Juil', 8: 'Aout', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec',
 };
 
 interface RevenuePoint  { month: string; revenue: number; orders: number; }
 interface CategoryPoint { name: string;  value: number;   color: string;  }
+
+interface OrderStatsRow  { status: string; total: number | null; created_at: string; }
+interface ProductStatsRow { stock: number; stock_alert: number; }
+interface OrderRevenueRow { total: number | null; created_at: string; }
+interface ProductCategoryRow { category: string; views: number | null; }
 
 interface KpiCardProps {
   label:    string;
@@ -82,24 +87,24 @@ export default function Dashboard() {
     const fetchStats = async () => {
       try {
         const [ordersRes, productsRes, devisRes] = await Promise.all([
-          supabase.from('orders').select('status, total, created_at', { count: 'exact' }),
-          supabase.from('products').select('stock, stock_alert', { count: 'exact' }),
-          supabase.from('devis').select('status', { count: 'exact' }).eq('status', 'new'),
+          client.from('orders').select('status, total, created_at', { count: 'exact' }),
+          client.from('products').select('stock, stock_alert', { count: 'exact' }),
+          client.from('devis').select('status', { count: 'exact' }).eq('status', 'new'),
         ]);
 
-        const allOrders = ordersRes.data ?? [];
-        const allProds  = productsRes.data ?? [];
+        const allOrders = (ordersRes.data ?? []) as OrderStatsRow[];
+        const allProds  = (productsRes.data ?? []) as ProductStatsRow[];
         const now       = new Date();
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
 
         const revenueMonth = allOrders
-          .filter((o: any) => o.status !== 'cancelled' && o.created_at >= monthStart)
-          .reduce((s: number, o: any) => s + (o.total ?? 0), 0);
+          .filter((o) => o.status !== 'cancelled' && o.created_at >= monthStart)
+          .reduce((s, o) => s + (o.total ?? 0), 0);
 
         setStats({
           total_orders:   ordersRes.count ?? 0,
-          pending_orders: allOrders.filter((o: any) => o.status === 'pending').length,
-          out_of_stock:   allProds.filter((p: any) => p.stock === 0).length,
+          pending_orders: allOrders.filter((o) => o.status === 'pending').length,
+          out_of_stock:   allProds.filter((p) => p.stock === 0).length,
           pending_devis:  devisRes.count ?? 0,
           revenue_month:  revenueMonth,
         });
@@ -109,12 +114,12 @@ export default function Dashboard() {
 
     const fetchCharts = async () => {
       try {
-        // ── Revenus 6 derniers mois ──
+        // Revenus 6 derniers mois
         const sixMonthsAgo = new Date();
         sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
         sixMonthsAgo.setDate(1);
 
-        const { data: ordersData } = await supabase
+        const { data: ordersData } = await client
           .from('orders')
           .select('total, created_at')
           .neq('status', 'cancelled')
@@ -128,7 +133,7 @@ export default function Dashboard() {
             const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
             byMonth[key] = { month: MONTH_LABELS[d.getMonth() + 1], revenue: 0, orders: 0 };
           }
-          ordersData.forEach((o: any) => {
+          (ordersData as OrderRevenueRow[]).forEach((o) => {
             const d   = new Date(o.created_at);
             const key = `${d.getFullYear()}-${d.getMonth() + 1}`;
             if (byMonth[key]) {
@@ -139,15 +144,15 @@ export default function Dashboard() {
           setRevenueData(Object.values(byMonth));
         }
 
-        // ── Répartition par catégorie (basée sur les vues produits) ──
-        const { data: prodsData } = await supabase
+        // Repartition par categorie (basee sur les vues produits)
+        const { data: prodsData } = await client
           .from('products')
           .select('category, views')
           .eq('is_active', true);
 
         if (prodsData) {
           const catCount: Record<string, number> = {};
-          prodsData.forEach((p: any) => {
+          (prodsData as ProductCategoryRow[]).forEach((p) => {
             catCount[p.category] = (catCount[p.category] ?? 0) + (p.views ?? 0);
           });
           const total = Object.values(catCount).reduce((s, v) => s + v, 0) || 1;
@@ -219,13 +224,13 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Ventes par catégorie */}
+        {/* Ventes par categorie */}
         <div className="card p-5">
-          <h3 className="font-heading font-semibold text-white mb-5">Popularité par catégorie</h3>
+          <h3 className="font-heading font-semibold text-white mb-5">Popularite par categorie</h3>
           {chartsLoading ? (
             <Skeleton className="h-[180px] w-full" />
           ) : categoryData.length === 0 ? (
-            <p className="text-muted text-sm text-center py-8">Aucune donnée disponible</p>
+            <p className="text-muted text-sm text-center py-8">Aucune donnee disponible</p>
           ) : (
             <>
               <ResponsiveContainer width="100%" height={180}>
@@ -257,12 +262,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Tableaux récents */}
+      {/* Tableaux recents */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Commandes récentes */}
+        {/* Commandes recentes */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="font-heading font-semibold text-white">Commandes récentes</h3>
+            <h3 className="font-heading font-semibold text-white">Commandes recentes</h3>
             <Link to="/admin/orders" className="text-gold hover:text-gold-dark text-sm font-medium">
               Voir tout
             </Link>
@@ -288,10 +293,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Devis récents */}
+        {/* Devis recents */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="font-heading font-semibold text-white">Devis récents</h3>
+            <h3 className="font-heading font-semibold text-white">Devis recents</h3>
             <Link to="/admin/devis" className="text-gold hover:text-gold-dark text-sm font-medium">
               Voir tout
             </Link>
@@ -336,7 +341,7 @@ export default function Dashboard() {
           <Link to="/admin/inventory" className="text-gold hover:underline">
             Gestion du stock
           </Link>{' '}
-          pour voir les produits en rupture ou à stock faible.
+          pour voir les produits en rupture ou a stock faible.
         </p>
       </div>
     </div>

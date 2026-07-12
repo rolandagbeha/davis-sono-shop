@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
-import type { Order, OrderStatus } from '../types';
+import { client } from '../lib/neon';
+import type { Order, OrderStatus, PaymentMethod } from '../types';
 import toast from 'react-hot-toast';
 import { notifyClientStatusChange } from '../lib/whatsapp';
 
@@ -20,7 +20,7 @@ export function useOrders(options: UseOrdersOptions = {}) {
     setIsLoading(true);
     setError(null);
     try {
-      let query = supabase
+      let query = client
         .from('orders')
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
@@ -45,24 +45,37 @@ export function useOrders(options: UseOrdersOptions = {}) {
   return { orders, total, isLoading, error, refetch: fetch };
 }
 
+export interface CreateOrderInput {
+  order_number:           string;
+  client_name:            string;
+  client_phone:           string;
+  client_email?:          string;
+  client_address:         string;
+  client_neighborhood:    string;
+  delivery_instructions?: string;
+  payment_method:         PaymentMethod;
+  items:                  { product_id: string; quantity: number }[];
+}
+
 export const orderService = {
-  async create(orderData: Omit<Order, 'id' | 'created_at' | 'updated_at'>): Promise<Order> {
-    const { data, error } = await supabase
-      .from('orders')
-      .insert(orderData)
-      .select()
-      .single();
-    if (error) throw error;
-
-    // Décrémente le stock pour chaque article
-    for (const item of orderData.items) {
-      supabase.rpc('decrement_stock', {
-        p_product_id: item.product_id,
-        p_quantity:   item.quantity,
-      }).then(() => {});
-    }
-
-    return data as Order;
+  // Cree via /api/orders (connexion Postgres directe cote serveur) : le Data
+  // API exige un jeton JWT meme pour un visiteur non connecte, et le plugin
+  // d'auth "anonymous" de Neon n'est pas disponible sur ce projet — voir
+  // HANDOFF_CLAUDE_CODE.md et api/_db.ts.
+  //
+  // Seuls product_id + quantity sont envoyes par article : le prix, le
+  // sous-total et le total sont toujours recalcules cote serveur a partir du
+  // vrai prix/stock en base (create_order_with_stock_check), jamais a partir
+  // de valeurs fournies par le navigateur — voir audit securite section 2.
+  async create(orderData: CreateOrderInput): Promise<Order> {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(orderData),
+    });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.error ?? 'Erreur creation commande');
+    return body.order as Order;
   },
 
   async updateStatus(
@@ -70,7 +83,7 @@ export const orderService = {
     newStatus: OrderStatus,
     order: Order,
   ): Promise<void> {
-    const { error } = await supabase
+    const { error } = await client
       .from('orders')
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', orderId);
@@ -89,7 +102,7 @@ export const orderService = {
   },
 
   async getById(id: string): Promise<Order | null> {
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('orders')
       .select('*')
       .eq('id', id)
