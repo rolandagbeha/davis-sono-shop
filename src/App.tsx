@@ -7,7 +7,9 @@ import { AuthProvider }   from './context/AuthContext';
 import { Navbar }         from './components/layout/Navbar';
 import { Footer }         from './components/layout/Footer';
 import { CartDrawer }     from './components/cart/CartDrawer';
+import { ChatWidget }     from './components/chat/ChatWidget';
 import { Spinner }        from './components/ui/Spinner';
+import { ScrollToTop }    from './components/ScrollToTop';
 
 // Pages publiques
 import Home              from './pages/Home';
@@ -30,6 +32,7 @@ const AdminDevis     = lazy(() => import('./pages/admin/Devis'));
 const AdminClients   = lazy(() => import('./pages/admin/Clients'));
 const AdminInventory = lazy(() => import('./pages/admin/Inventory'));
 const AdminSettings  = lazy(() => import('./pages/admin/Settings'));
+const AdminAssistant = lazy(() => import('./pages/admin/Assistant'));
 
 // Layout boutique publique
 function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -39,6 +42,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       {children}
       <Footer />
       <CartDrawer />
+      <ChatWidget />
     </>
   );
 }
@@ -46,6 +50,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <CartProvider>
           <Toaster
@@ -70,7 +75,7 @@ function App() {
             }
           >
             <Routes>
-              {/* ── Boutique publique ── */}
+              {/* Boutique publique */}
               <Route path="/" element={
                 <PublicLayout>
                   <Home />
@@ -112,7 +117,7 @@ function App() {
                 </PublicLayout>
               } />
 
-              {/* ── Admin ── */}
+              {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
@@ -121,10 +126,11 @@ function App() {
                 <Route path="devis"     element={<AdminDevis />} />
                 <Route path="clients"   element={<AdminClients />} />
                 <Route path="inventory" element={<AdminInventory />} />
+                <Route path="assistant" element={<AdminAssistant />} />
                 <Route path="settings"  element={<AdminSettings />} />
               </Route>
 
-              {/* ── 404 ── */}
+              {/* 404 */}
               <Route path="*" element={
                 <PublicLayout>
                   <NotFound />

@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, ShoppingBag, FileText,
-  Users, Archive, Settings, LogOut, Music2, X,
+  Users, Archive, Settings, LogOut, X, BotMessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -14,7 +14,8 @@ const NAV_ITEMS = [
   { href: '/admin/devis',     label: 'Devis',        icon: FileText },
   { href: '/admin/clients',   label: 'Clients',      icon: Users },
   { href: '/admin/inventory', label: 'Stock',        icon: Archive },
-  { href: '/admin/settings',  label: 'Paramètres',   icon: Settings },
+  { href: '/admin/assistant', label: 'Assistant IA', icon: BotMessageSquare },
+  { href: '/admin/settings',  label: 'Parametres',   icon: Settings },
 ];
 
 interface AdminSidebarProps {
@@ -29,10 +30,10 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   const handleSignOut = async () => {
     try {
       await signOut();
-      toast.success('Déconnecté avec succès');
+      toast.success('Deconnecte avec succes');
       navigate('/admin/login');
     } catch {
-      toast.error('Erreur lors de la déconnexion');
+      toast.error('Erreur lors de la deconnexion');
     }
   };
 
@@ -41,9 +42,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Logo */}
       <div className="p-6 border-b border-white/10 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gold rounded-lg flex items-center justify-center">
-            <Music2 size={16} className="text-bg-deep" />
-          </div>
+          <img src="/logo.jpg" alt="Davis Sono Shop" className="w-9 h-9 rounded-lg bg-white object-cover" />
           <div>
             <div className="font-heading font-bold text-sm text-white">Davis Sono</div>
             <div className="text-xs text-muted">Administration</div>
@@ -74,14 +73,14 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
         ))}
       </nav>
 
-      {/* Déconnexion */}
+      {/* Deconnexion */}
       <div className="p-4 border-t border-white/10">
         <button
           onClick={handleSignOut}
           className="admin-nav-link w-full text-red-400/70 hover:text-red-400 hover:bg-red-500/10"
         >
           <LogOut size={18} />
-          <span>Déconnexion</span>
+          <span>Deconnexion</span>
         </button>
       </div>
     </div>
